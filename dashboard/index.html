@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SOC Dashboard</title>
+<link rel="icon" href="logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -23,7 +24,16 @@ aside{background:var(--panel);border-right:1px solid var(--line);display:flex;fl
 .brand b{display:block;font-size:16px}
 .brand span{color:var(--muted);font-size:12px}
 .new-btn{margin:12px 12px 4px;background:var(--accent);color:#04161a;border:0;border-radius:8px;padding:9px 12px;font-weight:600}
-.cases{overflow:auto;padding:4px 8px 16px}
+.cases{overflow:auto;padding:4px 8px 16px;flex:1}
+.foot{border-top:1px solid var(--line);padding:14px 16px}
+.foot .who{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.foot .who img{width:36px;height:36px;border-radius:8px;display:block}
+.foot .who b{display:block;font-size:14px;line-height:1.2}
+.foot .who span{color:var(--muted);font-size:12px}
+.social{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.social a{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px;color:var(--muted);background:var(--panel2)}
+.social a:hover{color:var(--text);border-color:var(--accent)}
+.social svg{width:16px;height:16px;fill:currentColor}
 .group{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin:14px 10px 6px}
 .case-btn{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:9px 12px;margin-bottom:3px}
 .case-btn:hover{background:var(--panel2)}
@@ -125,6 +135,10 @@ textarea:focus,input:focus,select:focus{outline:1px solid var(--accent);border-c
     <div class="brand"><b>SOC Hunting Lab</b><span>Threat Hunting Dashboard</span></div>
     <button class="new-btn" id="newCase">+ New Case</button>
     <div class="cases" id="cases"></div>
+    <div class="foot">
+      <a class="who" href="https://cybers-sa.com" target="_blank" rel="noopener"><img src="logo.jpg" alt="Cybers_SA"><div><b>Cybers_SA</b><span>@Cybers_SA</span></div></a>
+      <div class="social"><a href="https://x.com/Cybers_SA" target="_blank" rel="noopener" title="X" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.9 1.2h3.7l-8 9.2 9.4 12.4h-7.4l-5.8-7.6-6.6 7.6H.5l8.6-9.8L.1 1.2h7.6l5.2 6.9 6-6.9zm-1.3 19.4h2L6.5 3.3H4.3l13.3 17.3z"/></svg></a><a href="https://www.linkedin.com/company/cybers-sa" target="_blank" rel="noopener" title="LinkedIn" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M20.4 20.5h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.3V9h3.4v1.6h.1c.5-.9 1.6-1.8 3.4-1.8 3.6 0 4.3 2.4 4.3 5.5v6.2zM5.3 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM7.1 20.5H3.5V9h3.6v11.5zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 .9.8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7C24 .8 23.2 0 22.2 0z"/></svg></a><a href="https://whatsapp.com/channel/0029VbE3hTSGufIprSJ8ml3i" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 2.5 1 3 .8 3.6.8.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4c-1-1.6-1.5-3.4-1.5-5.2C2.2 6.6 6.6 2.2 12 2.2c2.6 0 5.1 1 6.9 2.9 1.9 1.9 2.9 4.3 2.9 6.9 0 5.4-4.4 9.8-9.8 9.8zM20.5 3.5C18.2 1.2 15.2 0 12 0 5.4 0 .1 5.3.1 11.9c0 2.1.5 4.1 1.6 5.9L0 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.2-3.4-8.3z"/></svg></a><a href="https://t.me/Cybers_SA" target="_blank" rel="noopener" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M23.9 3.5 20.3 20.6c-.3 1.2-1 1.5-2 .9l-5.5-4-2.6 2.5c-.3.3-.5.5-1.1.5l.4-5.6L19.7 5.6c.4-.4-.1-.6-.7-.2L6.4 13.3.9 11.6c-1.2-.4-1.2-1.2.3-1.7L22.4 1.7c1-.4 1.9.2 1.5 1.8z"/></svg></a><a href="https://github.com/cybers-sa" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a><a href="https://cybers-sa.com" target="_blank" rel="noopener" title="Website" aria-label="Website"><svg viewBox="0 0 24 24"><path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm7.9 7.2h-3.4a18 18 0 0 0-1.4-4.6 9.7 9.7 0 0 1 4.8 4.6zM12 2.3c.9 1.3 1.7 3 2.2 4.9H9.8c.5-1.9 1.3-3.6 2.2-4.9zM2.6 14.4a9.6 9.6 0 0 1 0-4.8h3.8a20 20 0 0 0 0 4.8H2.6zm1.5 2.4h3.4c.3 1.7.8 3.3 1.4 4.6a9.7 9.7 0 0 1-4.8-4.6zm3.4-9.6H4.1a9.7 9.7 0 0 1 4.8-4.6c-.6 1.3-1.1 2.9-1.4 4.6zM12 21.7c-.9-1.3-1.7-3-2.2-4.9h4.4c-.5 1.9-1.3 3.6-2.2 4.9zm2.6-7.3H9.4a17.6 17.6 0 0 1 0-4.8h5.2a17.6 17.6 0 0 1 0 4.8zm.5 7a18 18 0 0 0 1.4-4.6h3.4a9.7 9.7 0 0 1-4.8 4.6zm2.5-7a20 20 0 0 0 0-4.8h3.8a9.6 9.6 0 0 1 0 4.8h-3.8z"/></svg></a></div>
+    </div>
   </aside>
   <main>
     <div class="head" id="head"></div>
