@@ -8,6 +8,10 @@
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/cybers-sa/soc-hunting-lab?hide_repo_select=true&ref=main&geo=EuropeWest&machine=basicLinux32gb)
 
+📘 **[دليل الاستخدام بالصور](docs/GUIDE.md)** · [PDF](docs/SOC-Lab-Guide.pdf)
+
+> ⚠️ **قبل أول قضية، اقرأ صفحة Learn في لوحة التحكم.** فيها المنهجية وكل ما تحتاجه للتحقيق.
+
 ## التشغيل
 
 1. اضغط زر **Open in GitHub Codespaces**.

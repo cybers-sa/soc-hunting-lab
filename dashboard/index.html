@@ -24,6 +24,7 @@ aside{background:var(--panel);border-right:1px solid var(--line);display:flex;fl
 .brand b{display:block;font-size:16px}
 .brand span{color:var(--muted);font-size:12px}
 .learn-btn{margin:0 12px 4px;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-weight:600}
+.new-tag{background:var(--high);color:#1a0d02;border-radius:999px;padding:1px 8px;font-size:11px;margin-left:6px;vertical-align:1px}
 .learn-btn.active{border-color:var(--accent);color:var(--accent)}
 .learn{max-width:980px;margin:0 auto}
 .learn td:first-child{direction:ltr;unicode-bidi:plaintext;text-align:right;white-space:nowrap}
@@ -149,7 +150,7 @@ textarea:focus,input:focus,select:focus{outline:1px solid var(--accent);border-c
   <aside>
     <div class="brand"><b>SOC Hunting Lab</b><span>Threat Hunting Dashboard</span></div>
     <button class="new-btn" id="newCase">+ New Case</button>
-    <button class="learn-btn" id="learn">Learn</button>
+    <button class="learn-btn" id="learn">Learn <span class="new-tag" id="learnTag" hidden>Start here</span></button>
     <div class="cases" id="cases"></div>
     <div class="foot">
       <a class="who" href="https://cybers-sa.com" target="_blank" rel="noopener"><img src="logo.jpg" alt="Cybers_SA"><div><b>Cybers_SA</b><span>@Cybers_SA</span></div></a>
@@ -204,7 +205,9 @@ async function api(path, opts){
 async function loadCases(select){
   state.cases = await api("/api/cases");
   renderCases();
-  if (!select && location.hash === "#learn") return showLearn();
+  let seen = true; try { seen = !!localStorage.getItem("soc-learn-seen"); } catch(e) {}
+  if (!seen) $("#learnTag").hidden = false;
+  if (!select && (location.hash === "#learn" || (!location.hash && !seen))) return showLearn();
   const want = select || location.hash.slice(1) || (state.cases[0] && state.cases[0].id);
   if (want) await selectCase(state.cases.some(c=>c.id===want) ? want : state.cases[0].id);
 }
@@ -222,12 +225,16 @@ function renderCases(){
 let learnHtml = null;
 async function showLearn(){
   state.view = "learn"; state.current = null; history.replaceState(null, "", "#learn");
+  try { localStorage.setItem("soc-learn-seen", "1"); } catch(e) {}
+  $("#learnTag").hidden = true;
   renderCases(); $("#learn").classList.add("active");
   const nav = [["method","Method"],["decisions","Triage"],["windows","Windows events"],["sysmon","Sysmon"],["zeek","Zeek"],["email","Email"],["iocs","IOCs"],["spl","Search"]];
-  $("#head").innerHTML = `<div class="head-row"><div><h1>Learn</h1><div class="sub"><span>Reference for investigations</span></div></div></div>
+  $("#head").innerHTML = `<div class="head-row"><div><h1>Learn</h1><div class="sub"><span>Read this before your first case, and come back whenever you need a reference.</span></div></div>
+    <button class="btn" id="firstCase">Start Case 01</button></div>
     <div class="tabs">${nav.map(([k,v])=>`<button class="tab" data-s="${k}">${v}</button>`).join("")}</div>`;
   if (learnHtml === null){ try { learnHtml = await (await fetch("learn.html")).text(); } catch(e){ learnHtml = ""; } }
   $("#content").innerHTML = `<div class="learn ar">${learnHtml}</div>`;
+  $("#firstCase").onclick = () => selectCase("case-01");
   document.querySelectorAll(".tab[data-s]").forEach(b => b.onclick = () => { const el = document.getElementById(b.dataset.s); if (el) $("main").scrollTo({top: el.offsetTop - $(".head").offsetHeight - 10, behavior: "smooth"}); });
 }
 async function selectCase(id){
@@ -272,7 +279,7 @@ function render(){
   if (!tabsFor(d).some(([k]) => k === state.tab)) state.tab = tabsFor(d)[0][0];
   if (state.tab === "investigation") return renderInvestigation(c, d);
   if (!d.analyzed && state.tab !== "raw"){
-    c.innerHTML = log + `<div class="empty"><b>This case has not been analyzed yet</b>Click <b>Analyze Evidence</b> to run ${tools || "the tools"} on the evidence.
+    c.innerHTML = log + `<div class="empty"><b>This case has not been analyzed yet</b>Click <strong>Analyze Evidence</strong> to run ${tools || "the tools"} on the evidence.
       <div class="steps">
         <div class="step"><div class="n">01 · ANALYZE</div>Run the detection tools on the evidence with one click.</div>
         <div class="step"><div class="n">02 · HUNT</div>Review alerts, detections and raw events to find what happened.</div>
