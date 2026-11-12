@@ -14,9 +14,12 @@
 
 ## ابدأ من هنا
 
+افتح القضية في لوحة التحكم واضغط **Analyze Evidence**، ثم ابدأ من تبويب **Overview**.
+
+استعلام البداية في تبويب **Search**:
+
 ```
-hunt cases/case-05
-chainsaw dump cases/case-05/evidence/Sysmon.evtx -q | less
+index=windows | stats count by EventID
 ```
 
 ## الأسئلة
@@ -28,5 +31,16 @@ chainsaw dump cases/case-05/evidence/Sysmon.evtx -q | less
 5. ما العملية الأب لأداة التفريغ؟ وماذا يدل ذلك على طريقة التنفيذ؟
 6. لو كانت العملية المستهدفة `lsass.exe`، ما الخطر؟ وما تقنية MITRE ATT&CK المطابقة؟
 7. ما قيمة `GrantedAccess` في حدث الوصول للعملية؟ وماذا تعني؟
+
+## تلميحات
+
+<details>
+<summary>اعرض التلميحات</summary>
+
+1. ابدأ بحدث إنشاء العملية (EID 1) لترى السكربت والأمر المنفذ.
+2. الحدث EID 10 يعني أن عملية وصلت إلى ذاكرة عملية أخرى. راجع `TargetImage` و `GrantedAccess`.
+3. الدالة `MiniDump` في `comsvcs.dll` تُستخدم لتفريغ ذاكرة العمليات.
+
+</details>
 
 </div>

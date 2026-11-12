@@ -23,7 +23,22 @@ aside{background:var(--panel);border-right:1px solid var(--line);display:flex;fl
 .brand{padding:18px 18px 14px;border-bottom:1px solid var(--line)}
 .brand b{display:block;font-size:16px}
 .brand span{color:var(--muted);font-size:12px}
-.new-btn{margin:12px 12px 4px;background:var(--accent);color:#04161a;border:0;border-radius:8px;padding:9px 12px;font-weight:600}
+.learn-btn{margin:0 12px 4px;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-weight:600}
+.learn-btn.active{border-color:var(--accent);color:var(--accent)}
+.learn{max-width:980px;margin:0 auto}
+.learn td:first-child{direction:ltr;unicode-bidi:plaintext;text-align:right;white-space:nowrap}
+.learn h2{font-size:18px;margin:30px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.learn section:first-child h2{margin-top:0}
+.learn h3{font-size:14.5px;margin:20px 0 8px;color:var(--muted)}
+.learn table{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+.learn th{text-align:right;position:static}
+.learn td,.learn th{text-align:right}
+.learn li{margin:6px 0}
+.learn a,.ar a{color:var(--accent)}
+.hint{margin:6px 0}
+.hint button{background:none;border:1px dashed var(--line);border-radius:8px;padding:6px 12px;color:var(--muted);font-size:12.5px}
+.ar pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;direction:ltr;text-align:left;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;margin:8px 0 0}
+.new-btn{margin:12px 12px 8px;background:var(--accent);color:#04161a;border:0;border-radius:8px;padding:9px 12px;font-weight:600}
 .cases{overflow:auto;padding:4px 8px 16px;flex:1}
 .foot{border-top:1px solid var(--line);padding:14px 16px}
 .foot .who{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
@@ -134,6 +149,7 @@ textarea:focus,input:focus,select:focus{outline:1px solid var(--accent);border-c
   <aside>
     <div class="brand"><b>SOC Hunting Lab</b><span>Threat Hunting Dashboard</span></div>
     <button class="new-btn" id="newCase">+ New Case</button>
+    <button class="learn-btn" id="learn">Learn</button>
     <div class="cases" id="cases"></div>
     <div class="foot">
       <a class="who" href="https://cybers-sa.com" target="_blank" rel="noopener"><img src="logo.jpg" alt="Cybers_SA"><div><b>Cybers_SA</b><span>@Cybers_SA</span></div></a>
@@ -188,6 +204,7 @@ async function api(path, opts){
 async function loadCases(select){
   state.cases = await api("/api/cases");
   renderCases();
+  if (!select && location.hash === "#learn") return showLearn();
   const want = select || location.hash.slice(1) || (state.cases[0] && state.cases[0].id);
   if (want) await selectCase(state.cases.some(c=>c.id===want) ? want : state.cases[0].id);
 }
@@ -202,7 +219,19 @@ function renderCases(){
     <div class="group">My cases</div>${mine.length ? mine.map(item).join("") : `<div class="count" style="padding:0 12px">Use <b>+ New Case</b> to analyze your own .evtx, .pcap or .eml files.</div>`}`;
   document.querySelectorAll(".case-btn").forEach(b => b.onclick = () => selectCase(b.dataset.id));
 }
+let learnHtml = null;
+async function showLearn(){
+  state.view = "learn"; state.current = null; history.replaceState(null, "", "#learn");
+  renderCases(); $("#learn").classList.add("active");
+  const nav = [["method","Method"],["decisions","Triage"],["windows","Windows events"],["sysmon","Sysmon"],["zeek","Zeek"],["email","Email"],["iocs","IOCs"],["spl","Search"]];
+  $("#head").innerHTML = `<div class="head-row"><div><h1>Learn</h1><div class="sub"><span>Reference for investigations</span></div></div></div>
+    <div class="tabs">${nav.map(([k,v])=>`<button class="tab" data-s="${k}">${v}</button>`).join("")}</div>`;
+  if (learnHtml === null){ try { learnHtml = await (await fetch("learn.html")).text(); } catch(e){ learnHtml = ""; } }
+  $("#content").innerHTML = `<div class="learn ar">${learnHtml}</div>`;
+  document.querySelectorAll(".tab[data-s]").forEach(b => b.onclick = () => { const el = document.getElementById(b.dataset.s); if (el) $("main").scrollTo({top: el.offsetTop - $(".head").offsetHeight - 10, behavior: "smooth"}); });
+}
 async function selectCase(id){
+  state.view = "case"; $("#learn").classList.remove("active");
   if (id !== state.current){ state.tab = "overview"; state.runLog = ""; state.spl = null; state.iocType = ""; state.events = null; }
   state.current = id; state.open = null; state.q = ""; state.filter = new Set(LEVELS); state.limit = 300; state.eid = ""; state.zlog = "";
   history.replaceState(null, "", "#" + id);
@@ -459,7 +488,7 @@ function renderNetworkTable(box, d){
 
 /* ---------- investigation ---------- */
 function parseReadme(src){
-  src = src.replace(/<\/?div[^>]*>/g, "");
+  src = src.replace(/<\/?(div|details)[^>]*>/g, "").replace(/<summary>.*?<\/summary>/g, "");
   const sections = []; let cur = null;
   for (const line of src.split("\n")){
     const m = line.match(/^##\s+(.*)/);
@@ -468,7 +497,8 @@ function parseReadme(src){
   }
   return sections;
 }
-function mdInline(s){ return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>"); }
+function mdInline(s){ return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>'); }
+function mdBlock(lines){ const out = []; let code = null; for (const l of lines){ if (l.trim().startsWith("```")){ if (code === null) code = []; else { out.push(`<pre>${esc(code.join("\n"))}</pre>`); code = null; } continue; } if (code !== null){ code.push(l); continue; } if (l.trim()) out.push(`<p style="margin:4px 0">${mdInline(l)}</p>`); } return out.join(""); }
 function parseQuestions(lines){
   const qs = [];
   for (const l of lines){
@@ -497,15 +527,20 @@ function renderInvestigation(c, d){
   const scenario = secs.find(s => s.title.includes("السيناريو"));
   const qsec = secs.find(s => s.title.includes("الأسئلة"));
   const qs = qsec ? parseQuestions(qsec.lines) : [];
+  const ssec = secs.find(s => s.title.includes("ابدأ من هنا"));
+  const hsec = secs.find(s => s.title.includes("تلميحات"));
+  const hints = hsec ? parseQuestions(hsec.lines) : [];
   d.notes = d.notes || {};
   const notes = d.notes;
   const scenarioText = scenario ? scenario.lines.join(" ").trim() : d.description;
   const opt = (list, v) => list.map(x => `<option value="${esc(x)}" ${x===v?"selected":""}>${x || "Select..."}</option>`).join("");
   c.innerHTML = `
     ${scenarioText ? `<div class="card"><h3>Scenario</h3><div class="${scenario?"ar":""}" dir="auto">${mdInline(scenarioText)}</div></div>` : ""}
+    ${ssec ? `<div class="card mt"><h3>Start here</h3><div class="ar">${mdBlock(ssec.lines)}</div></div>` : ""}
     ${qs.length ? `<div class="section-title">Questions</div>${qs.map((q,i)=>`
       <div class="q"><div class="qt ar"><span class="qn">${i+1}.</span>${q.split("\n").map(mdInline).join("<br>")}</div>
       <textarea data-k="q${i+1}" placeholder="Your answer..." dir="auto">${esc(notes["q"+(i+1)]||"")}</textarea></div>`).join("")}` : ""}
+    ${hints.length ? `<div class="section-title">Hints</div><div class="card">${hints.map((h,i)=>`<div class="hint ar"><button data-h="${i}">Show hint ${i+1}</button><div hidden>${mdInline(h)}</div></div>`).join("")}</div>` : ""}
     <div class="section-title">Triage decision</div>
     <div class="grid two">
       <div class="field"><label>Decision<small>Is this a real incident?</small></label><select class="select" data-k="decision" style="width:100%">${opt(DECISIONS, notes.decision||"")}</select></div>
@@ -515,6 +550,7 @@ function renderInvestigation(c, d){
     <div class="grid">${REPORT.map(([k,l,h])=>`<div class="field"><label>${l}${h?`<small>${h}</small>`:""}</label>
       <textarea data-k="${k}" dir="auto" style="min-height:${k==="timeline"||k==="summary"?110:72}px">${esc(notes[k]||"")}</textarea></div>`).join("")}</div>
     <div class="toolbar mt"><button class="btn" id="dl">Download report</button><span class="save" id="saved">${Object.keys(notes).length ? "Saved" : "Your answers are saved automatically"}</span></div>`;
+  c.querySelectorAll(".hint button").forEach(b => b.onclick = () => { b.hidden = true; b.nextElementSibling.hidden = false; });
   c.querySelectorAll("textarea,select").forEach(el => el[el.tagName === "SELECT" ? "onchange" : "oninput"] = () => { notes[el.dataset.k] = el.value; saveNotes(d); });
   $("#dl").onclick = () => {
     const L = [`# Incident Report: ${d.id.toUpperCase()} ${caseTitle(d)}`, "", `- Evidence: ${d.evidence.join(", ")}`, `- Date: ${new Date().toISOString().slice(0,10)}`,
@@ -865,6 +901,7 @@ function openNewCase(){
   };
 }
 $("#newCase").onclick = openNewCase;
+$("#learn").onclick = showLearn;
 loadCases();
 </script>
 </body>

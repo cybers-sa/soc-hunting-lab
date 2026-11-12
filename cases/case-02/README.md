@@ -14,9 +14,12 @@
 
 ## ابدأ من هنا
 
+افتح القضية في لوحة التحكم واضغط **Analyze Evidence**، ثم ابدأ من تبويب **Overview**.
+
+استعلام البداية في تبويب **Search**:
+
 ```
-hunt cases/case-02
-chainsaw dump cases/case-02/evidence/DC-Security.evtx -q | less
+index=windows | stats count by EventID, TargetUserName, Status
 ```
 
 ## الأسئلة
@@ -29,5 +32,16 @@ chainsaw dump cases/case-02/evidence/DC-Security.evtx -q | less
 6. هل نجح المهاجم في الدخول بأي حساب؟ وما هو؟
 7. ما الفرق بين Password Spraying و Brute Force؟ وأيهما هنا؟
 8. ما تقنية MITRE ATT&CK المطابقة؟
+
+## تلميحات
+
+<details>
+<summary>اعرض التلميحات</summary>
+
+1. طبّق استعلام البداية، ولاحظ عدد الحسابات المختلفة من مصدر واحد.
+2. رموز النتيجة في الحقل `Status`، ومعناها في جدول رموز Kerberos في تبويب **Learn**.
+3. الحدث 4768 برمز `0x0` يعني أن طلب التذكرة نجح.
+
+</details>
 
 </div>

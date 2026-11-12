@@ -14,9 +14,12 @@
 
 ## ابدأ من هنا
 
+افتح القضية في لوحة التحكم واضغط **Analyze Evidence**، ثم ابدأ من تبويب **Hayabusa Alerts**.
+
+استعلام البداية في تبويب **Search**:
+
 ```
-hunt cases/case-01
-chainsaw dump cases/case-01/evidence/Security.evtx -q | less
+index=windows | table _time EventID Computer SubjectUserName
 ```
 
 ## الأسئلة
@@ -27,5 +30,16 @@ chainsaw dump cases/case-01/evidence/Security.evtx -q | less
 4. متى حدث ذلك؟ (بتوقيت UTC)
 5. ما تقنية MITRE ATT&CK المطابقة؟
 6. لماذا يعد هذا الحدث من أعلى التنبيهات أولوية في الـ SOC؟
+
+## تلميحات
+
+<details>
+<summary>اعرض التلميحات</summary>
+
+1. ابدأ بالتنبيه الأعلى خطورة في تبويب **Hayabusa Alerts**، واضغط عليه لترى تفاصيله.
+2. اسم الحساب في الحقل `SubjectUserName`، واسم الجهاز في `Computer`.
+3. راجع جدول أحداث Windows في تبويب **Learn** لمعرفة معنى رقم الحدث.
+
+</details>
 
 </div>

@@ -14,9 +14,12 @@
 
 ## ابدأ من هنا
 
+افتح القضية في لوحة التحكم واضغط **Analyze Evidence**، ثم ابدأ من تبويب **Hayabusa Alerts**.
+
+استعلام البداية في تبويب **Search**:
+
 ```
-hunt cases/case-03
-chainsaw search "cmd.exe" cases/case-03/evidence -q
+index=windows EventID=1 | table _time ParentImage Image CommandLine
 ```
 
 ## الأسئلة
@@ -28,5 +31,16 @@ chainsaw search "cmd.exe" cases/case-03/evidence -q
 5. شكل الأوامر يكشف الأداة المستخدمة. ما هي؟
 6. ما تقنية MITRE ATT&CK المطابقة؟
 7. اكتب قاعدة كشف بسيطة (بالمنطق أو بصيغة Sigma) تلتقط هذا السلوك.
+
+## تلميحات
+
+<details>
+<summary>اعرض التلميحات</summary>
+
+1. في تبويب **Raw Events** اختر `EID 1` (إنشاء عملية) وراجع الحقل `ParentImage`.
+2. ابحث عن `ADMIN$` في تبويب **Search**.
+3. الأوامر تُنفذ عبر WMI، وتُكتب نتيجتها في ملف داخل مشاركة إدارية ثم تُقرأ. ابحث عن أدوات التنفيذ عن بُعد التي تعمل بهذه الطريقة.
+
+</details>
 
 </div>

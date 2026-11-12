@@ -14,9 +14,12 @@
 
 ## ابدأ من هنا
 
+افتح القضية في لوحة التحكم واضغط **Analyze Evidence**، ثم ابدأ من تبويب **Raw Events**.
+
+استعلام البداية في تبويب **Search**:
+
 ```
-hunt cases/case-04
-chainsaw dump cases/case-04/evidence/Sysmon.evtx -q | less
+index=windows EventID=1 | table _time ParentImage Image User
 ```
 
 ## الأسئلة
@@ -28,5 +31,16 @@ chainsaw dump cases/case-04/evidence/Sysmon.evtx -q | less
 5. لماذا يمكن تنفيذ هذا من شاشة تسجيل الدخول دون كلمة مرور؟
 6. ما تقنية MITRE ATT&CK المطابقة؟
 7. اذكر طريقتين لاكتشاف هذا النوع من الأبواب الخلفية.
+
+## تلميحات
+
+<details>
+<summary>اعرض التلميحات</summary>
+
+1. تتبّع سلسلة العمليات من `ParentImage` إلى `Image` حتى تصل إلى الأمر.
+2. قارن اسم الملف في `Image` مع وصفه في `Description`. هل يتطابقان؟
+3. أدوات الوصول في شاشة الدخول تعمل قبل تسجيل الدخول. ما الصلاحية التي تعمل بها؟
+
+</details>
 
 </div>

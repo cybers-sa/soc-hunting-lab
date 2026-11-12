@@ -14,9 +14,12 @@
 
 ## ابدأ من هنا
 
+افتح القضية في لوحة التحكم واضغط **Analyze Evidence**، ثم ابدأ من تبويب **Raw Events**.
+
+استعلام البداية في تبويب **Search**:
+
 ```
-hunt cases/case-06
-chainsaw dump cases/case-06/evidence/DC-Security.evtx -q | less
+index=windows | stats count by EventID, SubjectUserName
 ```
 
 ## الأسئلة
@@ -30,5 +33,16 @@ chainsaw dump cases/case-06/evidence/DC-Security.evtx -q | less
 5. لماذا يعد طلب هذه الصلاحيات من حساب مستخدم (وليس من وحدة تحكم) مؤشرًا خطيرًا؟
 6. ما تقنية MITRE ATT&CK المطابقة؟
 7. ما الحساب الأخطر الذي قد يستهدفه المهاجم بهذا الهجوم؟ ولماذا؟
+
+## تلميحات
+
+<details>
+<summary>اعرض التلميحات</summary>
+
+1. الحدث 4662 يسجل عملية على كائن في Active Directory. راجع الحقل `Properties`.
+2. ابحث عن معرفات GUID في مستندات Microsoft لمعرفة الصلاحية التي يمثلها كل واحد.
+3. هذه الصلاحيات تستخدمها وحدات التحكم لتبادل بيانات الدومين فيما بينها.
+
+</details>
 
 </div>

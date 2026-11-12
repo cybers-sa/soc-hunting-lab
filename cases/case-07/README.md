@@ -14,10 +14,12 @@
 
 ## ابدأ من هنا
 
+افتح القضية في لوحة التحكم واضغط **Analyze Evidence**، ثم ابدأ من تبويب **DNS**.
+
+استعلام البداية في تبويب **Search**:
+
 ```
-zeek-run cases/case-07/evidence/traffic.pcap
-cd cases/case-07/results/zeek
-cat dns.log | zeek-cut ts id.orig_h id.resp_h query qtype_name answers
+index=zeek sourcetype=dns | stats count by qtype_name
 ```
 
 ## الأسئلة
@@ -31,5 +33,16 @@ cat dns.log | zeek-cut ts id.orig_h id.resp_h query qtype_name answers
 7. فك ترميز Base64 لأحد الردود التالية. ماذا تجد؟
 8. ما تقنيات MITRE ATT&CK المطابقة؟
 9. اذكر ثلاثة مؤشرات اختراق (IOCs) من هذه القضية.
+
+## تلميحات
+
+<details>
+<summary>اعرض التلميحات</summary>
+
+1. في تبويب **DNS** ابحث عن `TXT`، ولاحظ النطاق المتكرر.
+2. انسخ محتوى الحقل `answers` من أول رد وافكّ ترميزه.
+3. استخدم [CyberChef](https://gchq.github.io/CyberChef/) مع وصفة **From Base64** لفك الترميز.
+
+</details>
 
 </div>

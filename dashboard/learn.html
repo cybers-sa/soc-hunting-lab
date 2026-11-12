@@ -1,0 +1,158 @@
+<section id="method">
+<h2>منهجية التحقيق</h2>
+<ol>
+  <li><b>افهم التنبيه:</b> ما الذي حدث؟ وعلى أي جهاز وحساب؟ ومتى؟</li>
+  <li><b>اجمع الأدلة:</b> السجلات الخام وتفاصيل الأحداث قبل التنبيه وبعده.</li>
+  <li><b>ابنِ الخط الزمني:</b> رتّب الأحداث بتوقيت UTC من أول نشاط مريب إلى آخره.</li>
+  <li><b>حدد النطاق:</b> هل تأثرت أجهزة أو حسابات أخرى؟ ابحث عن المؤشرات نفسها في كل البيانات.</li>
+  <li><b>احكم:</b> True Positive أو False Positive، وحدد الخطورة.</li>
+  <li><b>وثّق وأوصِ:</b> اكتب التقرير، وتقنيات MITRE ATT&amp;CK، ومؤشرات الاختراق، والإجراءات المطلوبة.</li>
+</ol>
+</section>
+
+<section id="decisions">
+<h2>قرارات الفرز</h2>
+<table>
+  <tr><th>القرار</th><th>المعنى</th></tr>
+  <tr><td><b>True Positive</b></td><td>نشاط ضار حقيقي، ويحتاج استجابة.</td></tr>
+  <tr><td><b>Benign True Positive</b></td><td>السلوك حدث فعلًا كما وصفه التنبيه، لكنه مصرح به (مثل اختبار اختراق أو أداة إدارية معروفة).</td></tr>
+  <tr><td><b>False Positive</b></td><td>التنبيه أو البلاغ خاطئ، والنشاط سليم.</td></tr>
+  <tr><td><b>Needs escalation</b></td><td>الأدلة غير كافية للحكم، ويُرفع إلى مستوى أعلى (Tier 2 أو Tier 3).</td></tr>
+</table>
+</section>
+
+<section id="windows">
+<h2>أهم أحداث Windows Security</h2>
+<table>
+  <tr><th>EID</th><th>الحدث</th></tr>
+  <tr><td>4624</td><td>تسجيل دخول ناجح</td></tr>
+  <tr><td>4625</td><td>تسجيل دخول فاشل</td></tr>
+  <tr><td>4634 / 4647</td><td>تسجيل خروج</td></tr>
+  <tr><td>4648</td><td>تسجيل دخول ببيانات اعتماد صريحة (مثل runas)</td></tr>
+  <tr><td>4672</td><td>منح صلاحيات خاصة عند تسجيل الدخول (حساب إداري)</td></tr>
+  <tr><td>4688</td><td>إنشاء عملية</td></tr>
+  <tr><td>4697 / 7045</td><td>تثبيت خدمة جديدة (7045 في سجل System)</td></tr>
+  <tr><td>4698</td><td>إنشاء مهمة مجدولة</td></tr>
+  <tr><td>4720</td><td>إنشاء حساب مستخدم</td></tr>
+  <tr><td>4728 / 4732</td><td>إضافة عضو إلى مجموعة أمنية (عامة / محلية)</td></tr>
+  <tr><td>4740</td><td>قفل حساب</td></tr>
+  <tr><td>4768</td><td>طلب تذكرة Kerberos TGT</td></tr>
+  <tr><td>4769</td><td>طلب تذكرة خدمة Kerberos</td></tr>
+  <tr><td>4771</td><td>فشل المصادقة المسبقة في Kerberos</td></tr>
+  <tr><td>4776</td><td>التحقق من بيانات الاعتماد عبر NTLM</td></tr>
+  <tr><td>4662</td><td>تنفيذ عملية على كائن في Active Directory</td></tr>
+  <tr><td>1102</td><td>مسح سجل الأمان</td></tr>
+  <tr><td>4104</td><td>تسجيل كتل سكربتات PowerShell (سجل PowerShell/Operational)</td></tr>
+</table>
+
+<h3>أنواع تسجيل الدخول (Logon Type)</h3>
+<table>
+  <tr><th>النوع</th><th>المعنى</th></tr>
+  <tr><td>2</td><td>دخول مباشر من الجهاز</td></tr>
+  <tr><td>3</td><td>دخول عبر الشبكة (مثل مشاركة الملفات)</td></tr>
+  <tr><td>4</td><td>مهمة مجدولة (Batch)</td></tr>
+  <tr><td>5</td><td>خدمة</td></tr>
+  <tr><td>7</td><td>فتح قفل الشاشة</td></tr>
+  <tr><td>8</td><td>دخول عبر الشبكة بكلمة مرور نصية</td></tr>
+  <tr><td>9</td><td>بيانات اعتماد جديدة (runas /netonly)</td></tr>
+  <tr><td>10</td><td>سطح المكتب البعيد (RDP)</td></tr>
+  <tr><td>11</td><td>دخول ببيانات اعتماد مخزنة</td></tr>
+</table>
+
+<h3>رموز نتائج Kerberos (4768 و 4771)</h3>
+<table>
+  <tr><th>الرمز</th><th>المعنى</th></tr>
+  <tr><td>0x0</td><td>نجاح</td></tr>
+  <tr><td>0x6</td><td>اسم المستخدم غير موجود</td></tr>
+  <tr><td>0x12</td><td>الحساب معطل أو مقفل أو منتهٍ</td></tr>
+  <tr><td>0x17</td><td>كلمة المرور منتهية</td></tr>
+  <tr><td>0x18</td><td>كلمة مرور خاطئة</td></tr>
+  <tr><td>0x25</td><td>فرق كبير في توقيت الساعة</td></tr>
+</table>
+</section>
+
+<section id="sysmon">
+<h2>أحداث Sysmon</h2>
+<table>
+  <tr><th>EID</th><th>الحدث</th><th>حقول مهمة</th></tr>
+  <tr><td>1</td><td>إنشاء عملية</td><td><code>Image</code> <code>CommandLine</code> <code>ParentImage</code> <code>User</code> <code>Hashes</code></td></tr>
+  <tr><td>3</td><td>اتصال شبكي</td><td><code>DestinationIp</code> <code>DestinationPort</code></td></tr>
+  <tr><td>7</td><td>تحميل مكتبة (DLL)</td><td><code>ImageLoaded</code> <code>Signed</code></td></tr>
+  <tr><td>8</td><td>إنشاء خيط في عملية أخرى (CreateRemoteThread)</td><td><code>SourceImage</code> <code>TargetImage</code></td></tr>
+  <tr><td>10</td><td>وصول عملية إلى ذاكرة عملية أخرى</td><td><code>SourceImage</code> <code>TargetImage</code> <code>GrantedAccess</code></td></tr>
+  <tr><td>11</td><td>إنشاء ملف</td><td><code>TargetFilename</code></td></tr>
+  <tr><td>12 / 13 / 14</td><td>تعديلات السجل (Registry)</td><td><code>TargetObject</code> <code>Details</code></td></tr>
+  <tr><td>15</td><td>إنشاء Alternate Data Stream</td><td><code>TargetFilename</code></td></tr>
+  <tr><td>22</td><td>استعلام DNS</td><td><code>QueryName</code> <code>Image</code></td></tr>
+  <tr><td>23</td><td>حذف ملف</td><td><code>TargetFilename</code></td></tr>
+</table>
+<p>العلاقة بين <code>ParentImage</code> و <code>Image</code> من أهم ما يُراجع: مثلًا Word يشغّل PowerShell، أو WmiPrvSE يشغّل cmd، سلوك غير طبيعي.</p>
+</section>
+
+<section id="zeek">
+<h2>سجلات Zeek</h2>
+<table>
+  <tr><th>السجل</th><th>المحتوى</th></tr>
+  <tr><td><code>conn.log</code></td><td>كل الاتصالات: المصدر والوجهة والمنفذ والمدة وحجم البيانات</td></tr>
+  <tr><td><code>dns.log</code></td><td>طلبات DNS وردودها: <code>query</code> <code>qtype_name</code> <code>answers</code></td></tr>
+  <tr><td><code>http.log</code></td><td>طلبات HTTP: <code>host</code> <code>uri</code> <code>user_agent</code></td></tr>
+  <tr><td><code>ssl.log</code></td><td>اتصالات TLS: <code>server_name</code> والشهادة</td></tr>
+  <tr><td><code>files.log</code></td><td>الملفات المنقولة وبصماتها</td></tr>
+  <tr><td><code>notice.log</code> / <code>weird.log</code></td><td>تنبيهات Zeek والسلوك الشاذ في البروتوكولات</td></tr>
+</table>
+<p>علامات مريبة في الشبكة: طلبات DNS كثيرة لنطاق واحد بأسماء فرعية عشوائية، وسجلات TXT كثيرة، واتصالات منتظمة على فترات ثابتة (Beaconing)، وحجم إرسال كبير لوجهة خارجية.</p>
+</section>
+
+<section id="email">
+<h2>تحليل الإيميل</h2>
+<table>
+  <tr><th>الفحص</th><th>ماذا يثبت</th></tr>
+  <tr><td><b>SPF</b></td><td>أن الخادم المرسل مصرح له بالإرسال عن نطاق <code>Return-Path</code>. ينجح أيضًا لنطاقات المهاجمين.</td></tr>
+  <tr><td><b>DKIM</b></td><td>أن الإيميل موقّع من النطاق ولم يُعدَّل أثناء النقل.</td></tr>
+  <tr><td><b>DMARC</b></td><td>أن نطاق <code>From</code> الظاهر يتوافق مع SPF أو DKIM، وسياسة التعامل مع الفشل.</td></tr>
+</table>
+<h3>علامات التصيد</h3>
+<ul>
+  <li>نطاق المرسل يشبه نطاق الشركة لكنه مختلف.</li>
+  <li><code>Reply-To</code> أو <code>Return-Path</code> لنطاق مختلف عن <code>From</code>.</li>
+  <li>فشل DKIM أو DMARC.</li>
+  <li>النص الظاهر للرابط يختلف عن عنوانه الحقيقي.</li>
+  <li>مرفق بامتداد مزدوج أو امتداد تنفيذي (<code>.iso</code> <code>.lnk</code> <code>.js</code> <code>.hta</code> <code>.exe</code>).</li>
+  <li>الاستعجال والتهديد وطلب كلمة مرور أو دفع.</li>
+</ul>
+<p>حقول <code>Received</code> تُقرأ من الأسفل إلى الأعلى: الأسفل هو أول خادم استلم الإيميل.</p>
+</section>
+
+<section id="iocs">
+<h2>مؤشرات الاختراق و Threat Intelligence</h2>
+<ul>
+  <li><b>المؤشرات:</b> عناوين IP، والنطاقات، والروابط، وبصمات الملفات (MD5 و SHA1 و SHA256)، وأسماء الملفات، والحسابات.</li>
+  <li><b>داخلي أم خارجي:</b> العناوين الداخلية (<code>10.x</code> و <code>172.16-31.x</code> و <code>192.168.x</code>) لا تُفحص في مصادر الإنترنت.</li>
+  <li><b>نتيجة نظيفة لا تعني أن المؤشر سليم:</b> المؤشرات الجديدة لا تظهر غالبًا في المصادر.</li>
+  <li><b>المصادر:</b> <a href="https://www.virustotal.com" target="_blank" rel="noopener">VirusTotal</a> · <a href="https://www.abuseipdb.com" target="_blank" rel="noopener">AbuseIPDB</a> · <a href="https://urlscan.io" target="_blank" rel="noopener">urlscan</a> · <a href="https://otx.alienvault.com" target="_blank" rel="noopener">AlienVault OTX</a> · <a href="https://bazaar.abuse.ch" target="_blank" rel="noopener">MalwareBazaar</a> · <a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener">CyberChef</a></li>
+  <li><b>MITRE ATT&amp;CK:</b> ابحث عن التقنية في <a href="https://attack.mitre.org" target="_blank" rel="noopener">attack.mitre.org</a> واكتب رقمها مثل <code>T1003.001</code>.</li>
+</ul>
+</section>
+
+<section id="spl">
+<h2>أوامر Search</h2>
+<p>الاستعلام يبدأ بشروط البحث، ثم أوامر مفصولة بالرمز <code>|</code>.</p>
+<table>
+  <tr><th>الصيغة</th><th>مثال</th></tr>
+  <tr><td>شرط على حقل</td><td><code>EventID=4625</code> · <code>Image=*powershell*</code> · <code>level!=informational</code></td></tr>
+  <tr><td>OR و NOT</td><td><code>EventID=4625 OR EventID=4771</code> · <code>NOT User=*SYSTEM</code></td></tr>
+  <tr><td>نص حر</td><td><code>mimikatz</code></td></tr>
+  <tr><td><code>stats</code></td><td><code>| stats count dc(Computer) by TargetUserName</code></td></tr>
+  <tr><td><code>top</code> / <code>rare</code></td><td><code>| top limit=10 query</code></td></tr>
+  <tr><td><code>timechart</code></td><td><code>| timechart span=1m count by level</code></td></tr>
+  <tr><td><code>table</code></td><td><code>| table _time Computer CommandLine</code></td></tr>
+  <tr><td><code>sort</code></td><td><code>| sort -count</code></td></tr>
+  <tr><td><code>where</code></td><td><code>| where count&gt;5</code></td></tr>
+  <tr><td><code>dedup</code></td><td><code>| dedup TargetUserName</code></td></tr>
+  <tr><td><code>head</code> / <code>tail</code></td><td><code>| head 20</code></td></tr>
+  <tr><td><code>rename</code></td><td><code>| rename id.orig_h as src</code></td></tr>
+  <tr><td><code>eval</code></td><td><code>| eval cmd=lower(CommandLine)</code></td></tr>
+</table>
+<p>دوال <code>stats</code>: <code>count</code> <code>dc</code> <code>values</code> <code>list</code> <code>sum</code> <code>avg</code> <code>min</code> <code>max</code> <code>earliest</code> <code>latest</code>.</p>
+<p>الفهارس: <code>index=windows</code> لأحداث السجل، و <code>index=alerts</code> لتنبيهات Hayabusa، و <code>index=sigma</code> لمطابقات Sigma، و <code>index=zeek</code> مع <code>sourcetype=dns</code> أو <code>conn</code>، و <code>index=email</code>.</p>
+</section>
