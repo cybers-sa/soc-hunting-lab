@@ -1,0 +1,11 @@
+
+==============================================
+ SOC Hunting Lab
+==============================================
+ Cases:    cases/case-01 ... cases/case-07
+ Detect:   hunt cases/case-01
+ Raw logs: chainsaw dump cases/case-01/evidence/Security.evtx -q | less
+ Search:   chainsaw search "whoami" cases/case-03/evidence -q
+ Network:  zeek-run cases/case-07/evidence/traffic.pcap
+==============================================
+

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Analyze a PCAP with Zeek. Usage: zeek-run <file.pcap> [output-dir]
+set -euo pipefail
+PCAP="$(readlink -f "$1")"
+OUT="$(readlink -m "${2:-$(dirname "$PCAP")/../results/zeek}")"
+mkdir -p "$OUT"
+docker run --rm \
+  -v "$(dirname "$PCAP")":/in:ro \
+  -v "$OUT":/out -w /out \
+  zeek/zeek:latest zeek -C -r "/in/$(basename "$PCAP")"
+sudo chown -R "$(id -u):$(id -g)" "$OUT"
+echo "Zeek logs in: $OUT"
+ls "$OUT"

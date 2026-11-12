@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Extract columns from Zeek logs. Usage: cat dns.log | zeek-cut query qtype_name
+exec docker run --rm -i zeek/zeek:latest zeek-cut "$@"

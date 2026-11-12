@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Run Hayabusa and Chainsaw (Sigma) against a case folder.
+set -euo pipefail
+LAB="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+CASE="${1:-.}"
+EVIDENCE="$CASE/evidence"
+[ -d "$EVIDENCE" ] || EVIDENCE="$CASE"
+OUT="$CASE/results"
+mkdir -p "$OUT"
+
+echo "==> Hayabusa timeline -> $OUT/hayabusa.csv"
+hayabusa csv-timeline -d "$EVIDENCE" -o "$OUT/hayabusa.csv" -w -C -q || true
+
+echo "==> Chainsaw + Sigma -> $OUT/chainsaw/"
+chainsaw hunt "$EVIDENCE" \
+  -s "$LAB/tools/sigma/rules" \
+  --mapping "$LAB/tools/chainsaw/mappings/sigma-event-logs-all.yml" \
+  --csv -o "$OUT/chainsaw" -q || true
+
+echo ""
+echo "Results in: $OUT"
+ls -R "$OUT"

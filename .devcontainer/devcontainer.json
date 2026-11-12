@@ -1,0 +1,19 @@
+{
+  "name": "SOC Hunting Lab",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "postCreateCommand": "bash setup.sh",
+  "postAttachCommand": "cat bin/welcome.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": ["mechatroner.rainbow-csv"]
+    }
+  }
+}
