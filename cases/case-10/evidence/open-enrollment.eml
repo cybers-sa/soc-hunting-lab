@@ -1,0 +1,52 @@
+Received: from EX01.contoso.com (10.10.5.20) by EX02.contoso.com (10.10.5.21)
+ with Microsoft SMTP Server id 15.2.1544.4; Sun, 04 Oct 2026 05:30:08 +0000
+Received: from hrmail.contoso.com (hrmail.contoso.com [10.10.7.15]) by
+ EX01.contoso.com with ESMTPS id 15.2.1544.4; Sun, 04 Oct 2026 05:30:06 +0000
+Authentication-Results: EX01.contoso.com; spf=pass (domain of hr@contoso.com
+ designates 10.10.7.15 as permitted sender) smtp.mailfrom=contoso.com;
+ dkim=pass (signature was verified) header.d=contoso.com; dmarc=pass
+ action=none header.from=contoso.com
+Return-Path: <hr@contoso.com>
+From: Contoso Human Resources <hr@contoso.com>
+To: all-staff@contoso.com
+Subject: Open enrollment for 2027 medical insurance starts today
+Date: Sun, 04 Oct 2026 08:30:00 +0300
+Message-ID: <hr-2027-enroll-0410@contoso.com>
+X-MS-Exchange-Organization-AuthAs: Internal
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============5061057319679700694=="
+
+--===============5061057319679700694==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Dear colleagues,
+
+Open enrollment for the 2027 medical insurance plan starts today and closes o=
+n 31 October.
+
+Review the plans and update your dependants on the HR portal:
+https://hr.contoso.com/benefits/2027
+
+For questions, contact the HR team on extension 4400.
+
+Contoso Human Resources
+
+--===============5061057319679700694==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<html><body style=3D"font-family:Segoe UI,Arial">
+<p>Dear colleagues,</p>
+<p>Open enrollment for the <b>2027 medical insurance</b> plan starts today an=
+d closes on <b>31 October</b>.</p>
+<p>Review the plans and update your dependants on the HR portal: <a href=3D"h=
+ttps://hr.contoso.com/benefits/2027">https://hr.contoso.com/benefits/2027</a>=
+</p>
+<p>For questions, contact the HR team on extension 4400.</p>
+<p>Contoso Human Resources</p>
+</body></html>
+
+--===============5061057319679700694==--

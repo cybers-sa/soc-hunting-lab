@@ -149,7 +149,7 @@ textarea:focus,input:focus,select:focus{outline:1px solid var(--accent);border-c
 <script>
 const LEVELS = ["critical","high","medium","low","informational"];
 const LEVEL_NAME = {critical:"Critical",high:"High",medium:"Medium",low:"Low",informational:"Info"};
-const CASE_EN = {"case-01":"Log Clearing","case-02":"Password Spraying","case-03":"Remote Execution","case-04":"Logon Screen Backdoor","case-05":"Process Memory Dump","case-06":"Domain Credential Theft","case-07":"Covert C2 Channel"};
+const CASE_EN = {"case-08":"Password Phishing","case-09":"Overdue Invoice","case-10":"Employee Report","case-01":"Log Clearing","case-02":"Password Spraying","case-03":"Remote Execution","case-04":"Logon Screen Backdoor","case-05":"Process Memory Dump","case-06":"Domain Credential Theft","case-07":"Covert C2 Channel"};
 const LEVEL_EN = {"مبتدئ":"Beginner","متوسط":"Intermediate","متقدم":"Advanced"};
 const REPORT = [
   ["summary","Executive summary","What happened, in a few lines"],
@@ -199,11 +199,11 @@ function renderCases(){
     </button>`;
   const lab = state.cases.filter(c=>!c.custom), mine = state.cases.filter(c=>c.custom);
   $("#cases").innerHTML = `<div class="group">Lab cases</div>${lab.map(item).join("")}
-    <div class="group">My cases</div>${mine.length ? mine.map(item).join("") : `<div class="count" style="padding:0 12px">Use <b>+ New Case</b> to analyze your own .evtx or .pcap files.</div>`}`;
+    <div class="group">My cases</div>${mine.length ? mine.map(item).join("") : `<div class="count" style="padding:0 12px">Use <b>+ New Case</b> to analyze your own .evtx, .pcap or .eml files.</div>`}`;
   document.querySelectorAll(".case-btn").forEach(b => b.onclick = () => selectCase(b.dataset.id));
 }
 async function selectCase(id){
-  if (id !== state.current){ state.tab = "overview"; state.runLog = ""; }
+  if (id !== state.current){ state.tab = "overview"; state.runLog = ""; state.spl = null; state.iocType = ""; state.events = null; }
   state.current = id; state.open = null; state.q = ""; state.filter = new Set(LEVELS); state.limit = 300; state.eid = ""; state.zlog = "";
   history.replaceState(null, "", "#" + id);
   renderCases();
@@ -214,7 +214,10 @@ function tabsFor(d){
   const t = [["overview","Overview"]];
   if (d.has_evtx) t.push(["alerts","Hayabusa Alerts"],["sigma","Sigma Detections"],["raw","Raw Events"]);
   if (d.has_pcap) t.push(["dns","DNS"],["conn","Connections"],["zeek","Zeek Logs"]);
-  t.push(["investigation","Investigation"]);
+  if (d.has_email) t.push(["email","Email"]);
+  if (d.has_evtx || d.has_pcap) t.push(["search","Search"]);
+  t.push(["iocs","IOCs"],["investigation","Investigation"]);
+  if (!d.has_evtx && !d.has_pcap) t.shift();
   return t;
 }
 
@@ -228,7 +231,7 @@ function render(){
         <div class="sub"><span>Level: ${esc(caseLevel(d))}</span><span>Evidence: ${d.evidence.map(e=>`<code>${esc(e)}</code>`).join(" ") || "none"}</span></div></div>
       <div class="actions">
         ${d.custom ? `<button class="btn danger" id="del">Delete case</button>` : ""}
-        ${d.evidence.length ? `<button class="btn" id="run">${d.analyzed ? "Re-analyze" : "Analyze Evidence"}</button>` : ""}
+        ${d.evidence.length && (d.has_evtx || d.has_pcap) ? `<button class="btn" id="run">${d.analyzed ? "Re-analyze" : "Analyze Evidence"}</button>` : ""}
       </div>
     </div>
     <div class="tabs">${tabsFor(d).map(([k,v])=>`<button class="tab ${state.tab===k?"active":""}" data-t="${k}">${v}</button>`).join("")}</div>`;
@@ -237,6 +240,7 @@ function render(){
   if ($("#del")) $("#del").onclick = deleteCase;
   const c = $("#content");
   const log = state.runLog ? `<div class="log">${esc(state.runLog)}</div>` : "";
+  if (!tabsFor(d).some(([k]) => k === state.tab)) state.tab = tabsFor(d)[0][0];
   if (state.tab === "investigation") return renderInvestigation(c, d);
   if (!d.analyzed && state.tab !== "raw"){
     c.innerHTML = log + `<div class="empty"><b>This case has not been analyzed yet</b>Click <b>Analyze Evidence</b> to run ${tools || "the tools"} on the evidence.
@@ -251,6 +255,9 @@ function render(){
   const box = document.createElement("div"); c.appendChild(box);
   if (state.tab === "overview") return renderOverview(box, d);
   if (["alerts","sigma"].includes(state.tab)) return renderWindowsTable(box, d);
+  if (state.tab === "email") return renderEmail(box, d);
+  if (state.tab === "iocs") return renderIocs(box, d);
+  if (state.tab === "search") return renderSearch(box, d);
   if (state.tab === "raw") return renderRaw(box, d);
   return renderNetworkTable(box, d);
 }
@@ -261,7 +268,7 @@ async function runAnalysis(){
     const r = await api("/api/run?id=" + encodeURIComponent(state.current), {method:"POST"});
     state.runLog = r.ok ? "" : r.output;
   } catch(e){ state.runLog = e.message; }
-  delete state.raw[state.current];
+  delete state.raw[state.current]; state.events = null;
   const tab = state.tab;
   state.cases = await api("/api/cases"); renderCases();
   state.data = await api("/api/case?id=" + encodeURIComponent(state.current));
@@ -471,33 +478,51 @@ function parseQuestions(lines){
   }
   return qs;
 }
+/* ---------- notes ---------- */
+let noteTimer;
+function saveNotes(d){
+  const s = $("#saved"); if (s) s.textContent = "Saving...";
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(async () => {
+    try { await api("/api/notes?id=" + encodeURIComponent(d.id), {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(d.notes)}); const s2 = $("#saved"); if (s2) s2.textContent = "Saved"; }
+    catch(e){ const s2 = $("#saved"); if (s2) s2.textContent = "Not saved: " + e.message; }
+  }, 600);
+}
+const VERDICTS = ["", "Malicious", "Suspicious", "Benign"];
+const DECISIONS = ["", "True Positive", "Benign True Positive", "False Positive", "Needs escalation"];
+const SEVERITIES = ["", "Critical", "High", "Medium", "Low"];
+
 function renderInvestigation(c, d){
   const secs = parseReadme(d.readme || "");
   const scenario = secs.find(s => s.title.includes("السيناريو"));
   const qsec = secs.find(s => s.title.includes("الأسئلة"));
   const qs = qsec ? parseQuestions(qsec.lines) : [];
-  const notes = d.notes || {};
+  d.notes = d.notes || {};
+  const notes = d.notes;
   const scenarioText = scenario ? scenario.lines.join(" ").trim() : d.description;
+  const opt = (list, v) => list.map(x => `<option value="${esc(x)}" ${x===v?"selected":""}>${x || "Select..."}</option>`).join("");
   c.innerHTML = `
     ${scenarioText ? `<div class="card"><h3>Scenario</h3><div class="${scenario?"ar":""}" dir="auto">${mdInline(scenarioText)}</div></div>` : ""}
     ${qs.length ? `<div class="section-title">Questions</div>${qs.map((q,i)=>`
       <div class="q"><div class="qt ar"><span class="qn">${i+1}.</span>${q.split("\n").map(mdInline).join("<br>")}</div>
       <textarea data-k="q${i+1}" placeholder="Your answer..." dir="auto">${esc(notes["q"+(i+1)]||"")}</textarea></div>`).join("")}` : ""}
+    <div class="section-title">Triage decision</div>
+    <div class="grid two">
+      <div class="field"><label>Decision<small>Is this a real incident?</small></label><select class="select" data-k="decision" style="width:100%">${opt(DECISIONS, notes.decision||"")}</select></div>
+      <div class="field"><label>Severity</label><select class="select" data-k="severity" style="width:100%">${opt(SEVERITIES, notes.severity||"")}</select></div>
+    </div>
     <div class="section-title">Incident report</div>
     <div class="grid">${REPORT.map(([k,l,h])=>`<div class="field"><label>${l}${h?`<small>${h}</small>`:""}</label>
       <textarea data-k="${k}" dir="auto" style="min-height:${k==="timeline"||k==="summary"?110:72}px">${esc(notes[k]||"")}</textarea></div>`).join("")}</div>
     <div class="toolbar mt"><button class="btn" id="dl">Download report</button><span class="save" id="saved">${Object.keys(notes).length ? "Saved" : "Your answers are saved automatically"}</span></div>`;
-  let t;
-  c.querySelectorAll("textarea").forEach(ta => ta.oninput = () => {
-    notes[ta.dataset.k] = ta.value; d.notes = notes; $("#saved").textContent = "Saving...";
-    clearTimeout(t); t = setTimeout(async () => {
-      try { await api("/api/notes?id=" + encodeURIComponent(d.id), {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(notes)}); $("#saved").textContent = "Saved"; }
-      catch(e){ $("#saved").textContent = "Not saved: " + e.message; }
-    }, 600);
-  });
+  c.querySelectorAll("textarea,select").forEach(el => el[el.tagName === "SELECT" ? "onchange" : "oninput"] = () => { notes[el.dataset.k] = el.value; saveNotes(d); });
   $("#dl").onclick = () => {
-    const L = [`# Incident Report: ${d.id.toUpperCase()} ${caseTitle(d)}`, "", `- Evidence: ${d.evidence.join(", ")}`, `- Date: ${new Date().toISOString().slice(0,10)}`, ""];
+    const L = [`# Incident Report: ${d.id.toUpperCase()} ${caseTitle(d)}`, "", `- Evidence: ${d.evidence.join(", ")}`, `- Date: ${new Date().toISOString().slice(0,10)}`,
+      `- Decision: ${notes.decision || "-"}`, `- Severity: ${notes.severity || "-"}`, ""];
     for (const [k,l] of REPORT){ L.push(`## ${l}`, "", notes[k] || "-", ""); }
+    const iv = notes.ioc_verdicts || {};
+    const reviewed = (d.iocs || []).filter(i => iv[i.type + "|" + i.value]);
+    if (reviewed.length){ L.push("## Reviewed indicators", "", "| Type | Value | Verdict |", "| --- | --- | --- |"); reviewed.forEach(i => L.push(`| ${i.type} | \`${i.value}\` | ${iv[i.type + "|" + i.value]} |`)); L.push(""); }
     if (qs.length){ L.push("## Case questions", ""); qs.forEach((q,i)=>{ L.push(`**${i+1}. ${q.replace(/\n/g," ")}**`, "", notes["q"+(i+1)] || "-", ""); }); }
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([L.join("\n")], {type:"text/markdown"}));
@@ -505,20 +530,311 @@ function renderInvestigation(c, d){
   };
 }
 
+/* ---------- email ---------- */
+const authBadge = (k, v) => { const c = v === "pass" ? "var(--ok)" : (v === "fail" ? "var(--critical)" : (v ? "var(--high)" : "var(--informational)")); return `<div class="kpi" style="--c:${c}"><div class="v" style="font-size:20px">${esc((v || "missing").toUpperCase())}</div><div class="l">${k.toUpperCase()}</div></div>`; };
+const dom = a => (a || "").split("@").pop();
+function renderEmail(box, d){
+  box.innerHTML = (d.emails || []).map(m => {
+    const replyDiff = m.reply_addr && dom(m.reply_addr) !== dom(m.from_addr);
+    const retDiff = m.return_addr && dom(m.return_addr) !== dom(m.from_addr);
+    const flag = t => `<span class="badge" style="--c:var(--high);margin-left:8px">${t}</span>`;
+    return `
+    <div class="card"><h3>${esc(m.file)}</h3>
+      <div class="kv" style="font-size:12.5px">
+        <span class="k">Subject</span><span class="v">${esc(m.subject)}</span>
+        <span class="k">From</span><span class="v">${esc(m.from)}</span>
+        <span class="k">Reply-To</span><span class="v">${esc(m.reply_to || "-")}${replyDiff ? flag("Different domain from From") : ""}</span>
+        <span class="k">Return-Path</span><span class="v">${esc(m.return_path || "-")}${retDiff ? flag("Different domain from From") : ""}</span>
+        <span class="k">To</span><span class="v">${esc(m.to)}</span>
+        <span class="k">Date</span><span class="v">${esc(m.date)}</span>
+        <span class="k">Message-ID</span><span class="v">${esc(m.message_id)}</span>
+      </div></div>
+    <div class="section-title">Authentication</div>
+    <div class="grid kpis">${authBadge("spf", m.auth.spf)}${authBadge("dkim", m.auth.dkim)}${authBadge("dmarc", m.auth.dmarc)}</div>
+    ${m.auth_raw ? `<div class="log mt">${esc(m.auth_raw)}</div>` : ""}
+    <div class="section-title">Delivery path (first hop at the top)</div>
+    <div class="wrap"><table><thead><tr><th>#</th><th>From</th><th>IP addresses</th><th>By</th><th>Time</th></tr></thead><tbody>
+      ${m.hops.map((h,i)=>`<tr><td class="mono">${i+1}</td><td class="mono">${esc(h.from)}</td><td class="mono">${esc(h.ips.join(", "))}</td><td class="mono">${esc(h.by)}</td><td class="mono">${esc(h.date)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="section-title">Links (${m.links.length})</div>
+    ${m.links.length ? `<div class="wrap"><table><thead><tr><th>Displayed text</th><th>Actual URL</th><th>Host</th></tr></thead><tbody>
+      ${m.links.map(l=>`<tr><td>${esc(l.text || "(plain text)")}</td><td class="mono" style="word-break:break-all;white-space:normal">${esc(l.href)}</td><td class="mono">${esc(l.host)}${l.mismatch ? flag("Text and link differ") : ""}</td></tr>`).join("")}
+    </tbody></table></div>` : `<div class="count">No links</div>`}
+    ${m.images.length ? `<div class="section-title">Remote images (${m.images.length})</div><div class="wrap"><table><thead><tr><th>Source</th><th>Size</th></tr></thead><tbody>
+      ${m.images.map(i=>`<tr><td class="mono" style="word-break:break-all;white-space:normal">${esc(i.src)}</td><td class="mono">${esc((i.width||"?") + "×" + (i.height||"?"))}</td></tr>`).join("")}</tbody></table></div>` : ""}
+    <div class="section-title">Attachments (${m.attachments.length})</div>
+    ${m.attachments.length ? m.attachments.map(a=>`<div class="card" style="margin-bottom:10px"><div class="kv">
+      <span class="k">Name</span><span class="v">${esc(a.name)}</span><span class="k">Type</span><span class="v">${esc(a.type)}</span>
+      <span class="k">Size</span><span class="v">${a.size} bytes</span><span class="k">MD5</span><span class="v">${a.md5}</span>
+      <span class="k">SHA1</span><span class="v">${a.sha1}</span><span class="k">SHA256</span><span class="v">${a.sha256}</span></div></div>`).join("") : `<div class="count">No attachments</div>`}
+    <div class="section-title">Body (plain text)</div>
+    <div class="log" style="max-height:none;font-family:Inter,sans-serif;font-size:13px">${esc(m.text || "(no plain text part)")}</div>
+    <details class="mt"><summary class="count" style="cursor:pointer">All headers (${m.headers.length})</summary>
+      <div class="card mt">${kvBlock(m.headers)}</div></details>`;
+  }).join(`<hr style="border:0;border-top:1px solid var(--line);margin:28px 0">`);
+}
+
+/* ---------- IOCs ---------- */
+const LOOKUPS = {
+  ip: v => [["VirusTotal",`https://www.virustotal.com/gui/ip-address/${v}`],["AbuseIPDB",`https://www.abuseipdb.com/check/${v}`],["Shodan",`https://www.shodan.io/host/${v}`]],
+  domain: v => [["VirusTotal",`https://www.virustotal.com/gui/domain/${v}`],["urlscan",`https://urlscan.io/domain/${v}`],["OTX",`https://otx.alienvault.com/indicator/domain/${v}`]],
+  url: v => [["VirusTotal",`https://www.virustotal.com/gui/search/${encodeURIComponent(encodeURIComponent(v))}`],["urlscan",`https://urlscan.io/search/#${encodeURIComponent('page.url:"' + v + '"')}`]],
+  sha256: v => [["VirusTotal",`https://www.virustotal.com/gui/file/${v}`],["MalwareBazaar",`https://bazaar.abuse.ch/browse.php?search=sha256%3A${v}`]],
+  sha1: v => [["VirusTotal",`https://www.virustotal.com/gui/file/${v}`]],
+  md5: v => [["VirusTotal",`https://www.virustotal.com/gui/file/${v}`]],
+};
+function renderIocs(box, d){
+  d.notes = d.notes || {}; d.notes.ioc_verdicts = d.notes.ioc_verdicts || {};
+  const iv = d.notes.ioc_verdicts;
+  const all = d.iocs || [];
+  const types = [...new Set(all.map(i=>i.type))];
+  state.iocType = state.iocType || "";
+  const q = state.q.toLowerCase();
+  const rows = all.filter(i => (!state.iocType || i.type === state.iocType) && (!state.hideInternal || i.scope !== "internal") && (!q || i.value.toLowerCase().includes(q)));
+  const reviewed = all.filter(i => iv[i.type+"|"+i.value]).length;
+  box.innerHTML = `<div class="toolbar">
+      <button class="chip ${!state.iocType?"on":""}" data-type="">All</button>
+      ${types.map(t=>`<button class="chip ${state.iocType===t?"on":""}" data-type="${t}">${t.toUpperCase()} (${all.filter(i=>i.type===t).length})</button>`).join("")}
+      <label class="count" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="hideint" ${state.hideInternal?"checked":""}> Hide internal IPs</label>
+      <input class="search" id="q" placeholder="Search..." value="${esc(state.q)}">
+      <span class="count">${reviewed} of ${all.length} reviewed</span>
+      <button class="btn ghost" id="copy">Copy malicious</button><span class="save" id="saved"></span></div>
+    ${rows.length ? `<div class="wrap"><table><thead><tr><th>Type</th><th>Indicator</th><th>Seen in</th><th>Count</th><th>Check</th><th>Verdict</th></tr></thead><tbody>
+      ${rows.map(i=>{ const k = i.type+"|"+i.value; return `<tr><td class="mono">${i.type}${i.scope?`<div class="count">${i.scope}</div>`:""}</td>
+        <td class="mono" style="word-break:break-all;white-space:normal;max-width:480px">${esc(i.value)}</td>
+        <td>${esc(i.sources.join(", "))}</td><td class="mono">${i.count}</td>
+        <td style="white-space:nowrap">${(LOOKUPS[i.type] ? (i.scope==="internal" ? [] : LOOKUPS[i.type](i.value)) : []).map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener" style="color:var(--accent);margin-right:10px">${n}</a>`).join("") || `<span class="count">-</span>`}</td>
+        <td><select class="select" data-k="${esc(k)}" style="padding:4px 8px">${VERDICTS.map(v=>`<option value="${v}" ${iv[k]===v?"selected":""}>${v||"Unreviewed"}</option>`).join("")}</select></td></tr>`; }).join("")}
+    </tbody></table></div>` : `<div class="empty"><b>No indicators</b></div>`}`;
+  box.querySelectorAll(".chip").forEach(b => b.onclick = () => { state.iocType = b.dataset.type; render(); });
+  $("#hideint").onchange = e => { state.hideInternal = e.target.checked; render(); };
+  const qi = $("#q"); let t; qi.oninput = () => { clearTimeout(t); t = setTimeout(() => { state.q = qi.value; render(); const n = $("#q"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 150); };
+  box.querySelectorAll("select[data-k]").forEach(s => s.onchange = () => { if (s.value) iv[s.dataset.k] = s.value; else delete iv[s.dataset.k]; keepScroll(render); saveNotes(d); });
+  $("#copy").onclick = async () => {
+    const list = all.filter(i => iv[i.type+"|"+i.value] === "Malicious").map(i => i.value).join("\n");
+    try { await navigator.clipboard.writeText(list); $("#saved").textContent = list ? "Copied" : "No malicious indicators yet"; } catch(e){ $("#saved").textContent = "Copy failed"; }
+  };
+}
+
+/* ---------- search (SPL-like) ---------- */
+function buildEvents(d){
+  const out = [];
+  const add = o => { const lc = {}; for (const k of Object.keys(o)) lc[k.toLowerCase()] = k; o.__lc = lc; o.__text = Object.entries(o).filter(([k])=>!k.startsWith("__")).map(([,v])=>String(v)).join(" ").toLowerCase(); out.push(o); };
+  const raw = state.raw[d.id];
+  if (raw) for (const e of raw.events){
+    const o = {_time: e.time, index: "windows", sourcetype: e.channel, EventID: e.eid, Computer: e.computer, Channel: e.channel, Provider: e.provider, RecordID: e.record};
+    for (const [k,v] of Object.entries(e.data)){ const leaf = k.split(".").pop(); if (!(leaf in o)) o[leaf] = v; if (leaf !== k) o[k] = v; }
+    add(o);
+  }
+  for (const r of d.hayabusa || []) add({_time: r.time, index: "alerts", sourcetype: "hayabusa", rule: r.rule, level: r.level, Computer: r.computer, EventID: r.eid, Channel: r.channel, details: r.details});
+  for (const r of d.sigma || []) for (const rule of r.rules) add({_time: r.time, index: "sigma", sourcetype: "chainsaw", rule, Computer: r.computer, EventID: r.eid});
+  for (const [name, log] of Object.entries(d.zeek || {})) for (const r of log.rows) add({_time: r.ts, index: "zeek", sourcetype: name, ...r});
+  for (const m of d.emails || []) add({_time: m.date, index: "email", sourcetype: "eml", subject: m.subject, from: m.from_addr, reply_to: m.reply_addr, return_path: m.return_addr, spf: m.auth.spf, dkim: m.auth.dkim, dmarc: m.auth.dmarc, links: m.links.map(l=>l.href).join(" "), attachments: m.attachments.map(a=>a.name).join(" ")});
+  return out;
+}
+const fget = (o, f) => { if (f in o) return o[f]; const k = o.__lc && o.__lc[f.toLowerCase()]; return k === undefined ? undefined : o[k]; };
+const wild = v => new RegExp("^" + v.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*") + "$", "i");
+const isNum = v => v !== "" && v !== null && v !== undefined && !isNaN(Number(v));
+function cmp(a, op, b){
+  if (a === undefined || a === null) return op === "!=";
+  if ([">","<",">=","<="].includes(op)){ if (!isNum(a) || !isNum(b)) return false; a = +a; b = +b; return op === ">" ? a > b : op === "<" ? a < b : op === ">=" ? a >= b : a <= b; }
+  const s = String(a), t = String(b);
+  const eq = t.includes("*") ? wild(t).test(s) : s.toLowerCase() === t.toLowerCase();
+  return op === "!=" ? !eq : eq;
+}
+const unq = s => s.replace(/^"(.*)"$/, "$1");
+function splitPipes(q){ const parts = []; let cur = "", inq = false; for (const ch of q){ if (ch === '"') inq = !inq; if (ch === "|" && !inq){ parts.push(cur); cur = ""; } else cur += ch; } parts.push(cur); return parts.map(p=>p.trim()); }
+function parseSearch(s){
+  const toks = s.match(/[^\s"=!<>()]+\s*(?:!=|>=|<=|=|>|<)\s*(?:"[^"]*"|[^\s()]+)|"[^"]*"|[^\s()]+/g) || [];
+  const clauses = []; let neg = false, or = false;
+  for (const t of toks){
+    const up = t.toUpperCase();
+    if (up === "AND") continue;
+    if (up === "OR"){ or = true; continue; }
+    if (up === "NOT"){ neg = true; continue; }
+    const m = t.match(/^([^\s"=!<>]+)\s*(!=|>=|<=|=|>|<)\s*(.*)$/);
+    const term = m ? {field: m[1], op: m[2], value: unq(m[3]), neg} : {text: unq(t).toLowerCase(), neg};
+    if (or && clauses.length) clauses[clauses.length-1].push(term); else clauses.push([term]);
+    neg = false; or = false;
+  }
+  return clauses;
+}
+function matchTerm(e, t){
+  let r;
+  if (t.text !== undefined) r = t.text.includes("*") ? new RegExp(t.text.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*"), "i").test(e.__text) : e.__text.includes(t.text);
+  else r = cmp(fget(e, t.field), t.op, t.value);
+  return t.neg ? !r : r;
+}
+const matchAll = (e, clauses) => clauses.every(alts => alts.some(t => matchTerm(e, t)));
+const fieldList = s => s.split(/[\s,]+/).filter(Boolean);
+function spanMs(s){ const m = String(s || "1h").match(/^(\d+)\s*(s|m|h|d)$/i); if (!m) return 3600000; return +m[1] * {s:1e3, m:6e4, h:36e5, d:864e5}[m[2].toLowerCase()]; }
+function aggregate(rows, aggs, by){
+  const groups = new Map();
+  for (const r of rows){ const key = by.map(f => String(fget(r, f) ?? "")).join("\u0001"); if (by.length && by.every(f => fget(r, f) === undefined)) continue; if (!groups.has(key)) groups.set(key, {vals: by.map(f => fget(r, f) ?? ""), rows: []}); groups.get(key).rows.push(r); }
+  if (!by.length && !groups.size) groups.set("", {vals: [], rows: []});
+  const out = [];
+  for (const g of groups.values()){
+    const o = {}; by.forEach((f,i) => o[f] = g.vals[i]);
+    for (const a of aggs){
+      const vals = a.field ? g.rows.map(r => fget(r, a.field)).filter(v => v !== undefined && v !== "" && v !== "-") : [];
+      const nums = vals.filter(isNum).map(Number);
+      let v;
+      switch (a.fn){
+        case "count": v = a.field ? vals.length : g.rows.length; break;
+        case "dc": case "distinct_count": v = new Set(vals.map(String)).size; break;
+        case "values": v = [...new Set(vals.map(String))].sort().slice(0, 50).join("\n"); break;
+        case "list": v = vals.map(String).slice(0, 50).join("\n"); break;
+        case "sum": v = nums.reduce((s,x)=>s+x, 0); break;
+        case "avg": v = nums.length ? +(nums.reduce((s,x)=>s+x, 0) / nums.length).toFixed(2) : ""; break;
+        case "min": v = nums.length ? Math.min(...nums) : ""; break;
+        case "max": v = nums.length ? Math.max(...nums) : ""; break;
+        case "earliest": case "latest": { const ts = g.rows.map(r => parseTime(r._time)).filter(x=>!isNaN(x)); v = ts.length ? fmtTime(a.fn === "earliest" ? Math.min(...ts) : Math.max(...ts)) : ""; break; }
+        default: throw new Error(`Unknown function: ${a.fn}`);
+      }
+      o[a.as] = v;
+    }
+    out.push(o);
+  }
+  return out;
+}
+function runQuery(events, q){
+  const parts = splitPipes(q);
+  let first = parts.shift() || "";
+  if (/^search\s/i.test(first)) first = first.replace(/^search\s+/i, "");
+  let rows = events.filter(e => matchAll(e, parseSearch(first)));
+  let cols = null;
+  for (const p of parts){
+    const m = p.match(/^(\w+)\s*(.*)$/s); if (!m) continue;
+    const cmd = m[1].toLowerCase(), arg = m[2].trim();
+    if (cmd === "search") rows = rows.filter(e => matchAll(e, parseSearch(arg)));
+    else if (cmd === "where"){
+      const conds = arg.split(/\s+(and|or)\s+/i);
+      rows = rows.filter(r => { let res = null, join = "and";
+        for (let i = 0; i < conds.length; i++){ const c = conds[i]; if (/^(and|or)$/i.test(c)){ join = c.toLowerCase(); continue; }
+          const mm = c.match(/^\s*([^\s=!<>]+)\s*(==|!=|>=|<=|=|>|<)\s*(.+?)\s*$/); if (!mm) throw new Error(`Cannot parse where: ${c}`);
+          const ok = cmp(fget(r, mm[1]), mm[2] === "==" ? "=" : mm[2], unq(mm[3]));
+          res = res === null ? ok : (join === "and" ? res && ok : res || ok); }
+        return res; });
+    }
+    else if (cmd === "stats"){
+      const [aggPart, byPart] = arg.split(/\s+by\s+/i);
+      const aggs = [...aggPart.matchAll(/(\w+)(?:\(([^)]*)\))?(?:\s+as\s+([\w.]+))?/gi)].map(x => ({fn: x[1].toLowerCase(), field: x[2] || "", as: x[3] || (x[2] ? `${x[1].toLowerCase()}(${x[2]})` : x[1].toLowerCase())}));
+      const by = byPart ? fieldList(byPart) : [];
+      rows = aggregate(rows, aggs, by); cols = [...by, ...aggs.map(a=>a.as)];
+    }
+    else if (cmd === "top" || cmd === "rare"){
+      let limit = 10; const a = arg.replace(/limit\s*=\s*(\d+)/i, (_, n) => { limit = +n; return ""; });
+      const f = fieldList(a); const total = rows.length || 1;
+      rows = aggregate(rows, [{fn:"count", field:"", as:"count"}], f).map(r => ({...r, percent: +(r.count / total * 100).toFixed(2)}));
+      rows.sort((x,y) => cmd === "top" ? y.count - x.count : x.count - y.count); rows = rows.slice(0, limit); cols = [...f, "count", "percent"];
+    }
+    else if (cmd === "timechart"){
+      let span = "1h"; let a = arg.replace(/span\s*=\s*(\S+)/i, (_, s) => { span = s; return ""; }).trim();
+      const ms = spanMs(span); const [aggPart, byPart] = a.split(/\s+by\s+/i);
+      const agg = [...(aggPart || "count").matchAll(/(\w+)(?:\(([^)]*)\))?/g)][0];
+      rows = rows.map(r => ({...r, __bucket: fmtTime(Math.floor(parseTime(r._time) / ms) * ms)})).filter(r => r.__bucket);
+      const by = byPart ? fieldList(byPart)[0] : null;
+      const g = aggregate(rows, [{fn: agg[1].toLowerCase(), field: agg[2] || "", as: "v"}], by ? ["__bucket", by] : ["__bucket"]);
+      if (by){ const keys = [...new Set(g.map(r => String(r[by])))]; const m2 = new Map(); for (const r of g){ if (!m2.has(r.__bucket)) m2.set(r.__bucket, {_time: r.__bucket}); m2.get(r.__bucket)[r[by]] = r.v; } rows = [...m2.values()]; cols = ["_time", ...keys]; }
+      else { rows = g.map(r => ({_time: r.__bucket, [agg[0]]: r.v})); cols = ["_time", agg[0]]; }
+      rows.sort((x,y) => x._time < y._time ? -1 : 1);
+    }
+    else if (cmd === "table" || cmd === "fields"){ cols = fieldList(arg).filter(f => f !== "-"); }
+    else if (cmd === "rename"){ for (const mm of arg.matchAll(/([\w.()]+)\s+as\s+([\w.]+)/gi)){ rows = rows.map(r => { const v = fget(r, mm[1]); const o = {...r}; if (v !== undefined){ o[mm[2]] = v; delete o[mm[1]]; } if (o.__lc) o.__lc = {...o.__lc, [mm[2].toLowerCase()]: mm[2]}; return o; }); if (cols) cols = cols.map(c => c === mm[1] ? mm[2] : c); } }
+    else if (cmd === "sort"){
+      let limit = null; const a = arg.replace(/^(\d+)\s+/, (_, n) => { limit = +n; return ""; });
+      const keys = fieldList(a).map(k => ({desc: k.startsWith("-"), f: k.replace(/^[-+]/, "")}));
+      rows = [...rows].sort((x,y) => { for (const k of keys){ const a1 = fget(x, k.f), b1 = fget(y, k.f); let c = isNum(a1) && isNum(b1) ? a1 - b1 : String(a1 ?? "").localeCompare(String(b1 ?? "")); if (c) return k.desc ? -c : c; } return 0; });
+      if (limit) rows = rows.slice(0, limit);
+    }
+    else if (cmd === "head") rows = rows.slice(0, +(arg || 10));
+    else if (cmd === "tail") rows = rows.slice(-(+(arg || 10)));
+    else if (cmd === "dedup"){ const f = fieldList(arg); const seen = new Set(); rows = rows.filter(r => { const k = f.map(x => String(fget(r, x))).join("\u0001"); if (seen.has(k)) return false; seen.add(k); return true; }); }
+    else if (cmd === "eval"){
+      const mm = arg.match(/^([\w.]+)\s*=\s*(lower|upper|len)\(([\w.]+)\)$/i);
+      if (!mm) throw new Error("eval supports: field=lower(x), upper(x), len(x)");
+      rows = rows.map(r => { const v = String(fget(r, mm[3]) ?? ""); const o = {...r, [mm[1]]: mm[2].toLowerCase() === "lower" ? v.toLowerCase() : mm[2].toLowerCase() === "upper" ? v.toUpperCase() : v.length}; if (o.__lc) o.__lc = {...o.__lc, [mm[1].toLowerCase()]: mm[1]}; return o; });
+      if (cols) cols.push(mm[1]);
+    }
+    else throw new Error(`Unknown command: ${cmd}`);
+  }
+  return {rows, cols};
+}
+function examplesFor(d){
+  const ex = [];
+  if (d.has_evtx) ex.push(
+    ["Events by ID", "index=windows | stats count by EventID | sort -count"],
+    ["Process tree", "index=windows EventID=1 | stats count by ParentImage, Image"],
+    ["Command lines", "index=windows EventID=1 | table _time Computer User CommandLine"],
+    ["Failed logons", "index=windows EventID=4625 OR EventID=4771 | stats count by TargetUserName, IpAddress"],
+    ["Alerts by rule", "index=alerts level!=informational | stats count by level, rule | sort -count"],
+    ["Alert timeline", "index=alerts | timechart span=1m count by level"]);
+  if (d.has_pcap) ex.push(
+    ["Top DNS queries", "index=zeek sourcetype=dns | top limit=10 query"],
+    ["TXT records", "index=zeek sourcetype=dns qtype_name=TXT | table _time id.orig_h id.resp_h query"],
+    ["Talkers", "index=zeek sourcetype=conn | stats count sum(orig_bytes) as sent by id.orig_h, id.resp_h, id.resp_p | sort -count"]);
+  if (d.has_email) ex.push(["Email auth", "index=email | table subject from reply_to spf dkim dmarc"]);
+  return ex;
+}
+async function renderSearch(box, d){
+  if (d.has_evtx && !state.raw[d.id]){
+    box.innerHTML = `<div class="empty"><b>Loading events...</b></div>`;
+    try { state.raw[d.id] = await api("/api/raw?id=" + encodeURIComponent(d.id)); } catch(e){ box.innerHTML = `<div class="empty"><b>Could not load events</b>${esc(e.message)}</div>`; return; }
+    if (state.tab !== "search" || state.current !== d.id) return;
+  }
+  if (!state.events || state.eventsFor !== d.id){ state.events = buildEvents(d); state.eventsFor = d.id; }
+  const ex = examplesFor(d);
+  state.spl = state.spl ?? (ex[0] ? ex[0][1] : "*");
+  let res, err = "";
+  try { res = runQuery(state.events, state.spl); } catch(e){ err = e.message; }
+  const idx = count(state.events, e => e.index);
+  box.innerHTML = `
+    <div class="card"><div style="display:flex;gap:8px">
+      <input class="search mono" id="spl" value="${esc(state.spl)}" spellcheck="false" style="font-size:13px">
+      <button class="btn" id="go">Search</button></div>
+      <div class="toolbar" style="margin:10px 0 0">${ex.map(([n,q])=>`<button class="chip" data-q="${esc(q)}">${esc(n)}</button>`).join("")}</div>
+      <div class="count" style="margin-top:8px">Indexes: ${idx.map(([k,n])=>`<code class="mono">index=${esc(k)}</code> (${n})`).join(" · ")} · Commands: stats, top, rare, timechart, table, sort, head, tail, where, dedup, rename, eval, search</div></div>
+    <div class="mt" id="res"></div>`;
+  const resEl = $("#res");
+  if (err) resEl.innerHTML = `<div class="log" style="color:var(--critical)">${esc(err)}</div>`;
+  else {
+    const rows = res.rows;
+    let cols = res.cols;
+    const isRaw = !cols;
+    if (isRaw) cols = ["_time", "index", "sourcetype", "_raw"];
+    const shown = rows.slice(0, state.limit);
+    const cell = (r, c) => { if (c === "_raw") return Object.entries(r).filter(([k]) => !k.startsWith("_") && !["index","sourcetype"].includes(k)).slice(0, 6).map(([k,v]) => `${k}=${v}`).join("  "); const v = fget(r, c); return c === "_time" && v && !/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/.test(v) ? fmtTime(parseTime(v)) : v; };
+    const chart = !isRaw && cols.length >= 2 && rows.length > 1 && rows.length <= 50 && rows.every(r => isNum(fget(r, cols[cols.length-1])));
+    resEl.innerHTML = `<div class="count" style="margin-bottom:8px">${rows.length} results</div>
+      ${chart ? `<div class="card" style="margin-bottom:14px">${bars(rows.map(r => [cols.slice(0,-1).map(c => cell(r,c)).join(" · ") || cols[0], +fget(r, cols[cols.length-1])]), {limit: 15})}</div>` : ""}
+      ${rows.length ? `<div class="wrap"><table><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>
+        ${shown.map((r,i)=>`<tr class="${isRaw?"r":""}" data-i="${i}">${cols.map(c=>`<td class="mono ${c==="_raw"?"trunc":""}" style="${c!=="_raw"?"white-space:pre-wrap":""}">${esc(cell(r,c) ?? "")}</td>`).join("")}</tr>
+          ${isRaw && state.open===i ? `<tr class="detail"><td colspan="${cols.length}">${kvBlock(Object.entries(r).filter(([k])=>!k.startsWith("__")))}</td></tr>` : ""}`).join("")}
+      </tbody></table></div>${moreBtn(shown.length, rows.length)}` : ""}`;
+  }
+  const spl = $("#spl");
+  const go = () => { state.spl = spl.value; state.limit = 300; state.open = null; render(); };
+  $("#go").onclick = go;
+  spl.onkeydown = e => { if (e.key === "Enter") go(); };
+  box.querySelectorAll(".chip[data-q]").forEach(b => b.onclick = () => { state.spl = b.dataset.q; state.limit = 300; state.open = null; render(); });
+  const m = $("#more"); if (m) m.onclick = () => { state.limit += 500; keepScroll(render); };
+  bindRows();
+}
+
 /* ---------- new case ---------- */
 function openNewCase(){
   let files = [];
   const m = $("#modal");
   m.innerHTML = `<div class="modal-bg"><div class="modal">
-    <h2>New Case</h2><p>Upload Windows event logs (.evtx) or network captures (.pcap, .pcapng). Use lab or CTF data only.</p>
+    <h2>New Case</h2><p>Upload Windows event logs (.evtx), network captures (.pcap, .pcapng) or emails (.eml). Use lab or CTF data only.</p>
     <input type="text" id="nc-title" placeholder="Case title, e.g. Suspicious PowerShell on HR-PC">
     <textarea id="nc-desc" placeholder="Scenario or notes (optional)" dir="auto"></textarea>
-    <div class="drop" id="drop">Drop files here or click to choose<input type="file" id="nc-file" multiple accept=".evtx,.pcap,.pcapng,.cap" hidden></div>
+    <div class="drop" id="drop">Drop files here or click to choose<input type="file" id="nc-file" multiple accept=".evtx,.pcap,.pcapng,.cap,.eml" hidden></div>
     <div class="files" id="nc-files"></div><div class="err" id="nc-err"></div>
     <div class="row"><button class="btn ghost" id="nc-cancel">Cancel</button><button class="btn" id="nc-go" disabled>Create and Analyze</button></div>
   </div></div>`;
   const drop = $("#drop"), input = $("#nc-file");
-  const ok = f => /\.(evtx|pcap|pcapng|cap)$/i.test(f.name);
+  const ok = f => /\.(evtx|pcap|pcapng|cap|eml)$/i.test(f.name);
   const show = () => {
     $("#nc-files").innerHTML = files.map(f=>`<div><span>${esc(f.name)}</span><span>${(f.size/1048576).toFixed(1)} MB</span></div>`).join("");
     $("#nc-go").disabled = !files.length;

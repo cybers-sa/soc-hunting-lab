@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """SOC Hunting Lab dashboard server."""
 import csv
+import email
+import email.policy
+import email.utils
+import hashlib
+import html.parser
+import ipaddress
 import json
 import os
 import re
@@ -15,9 +21,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 LAB = os.path.dirname(HERE)
 CASES = os.path.join(LAB, "cases")
 PORT = int(os.environ.get("PORT", "8000"))
-BUILTIN = {f"case-{i:02d}" for i in range(1, 8)}
+BUILTIN = {f"case-{i:02d}" for i in range(1, 11)}
 EVTX_EXT = (".evtx",)
 PCAP_EXT = (".pcap", ".pcapng", ".cap")
+EMAIL_EXT = (".eml",)
 MAX_UPLOAD = 500 * 1024 * 1024
 MAX_RAW = 20000
 
@@ -52,6 +59,7 @@ def case_meta(name):
     res = os.path.join(CASES, name, "results")
     has_evtx = any(e.lower().endswith(EVTX_EXT) for e in ev)
     has_pcap = any(e.lower().endswith(PCAP_EXT) for e in ev)
+    has_email = any(e.lower().endswith(EMAIL_EXT) for e in ev)
     analyzed = (not has_evtx or os.path.isfile(os.path.join(res, "hayabusa.csv"))) and \
                (not has_pcap or os.path.isdir(os.path.join(res, "zeek"))) and bool(ev)
     return {
@@ -63,6 +71,7 @@ def case_meta(name):
         "evidence": ev,
         "has_evtx": has_evtx,
         "has_pcap": has_pcap,
+        "has_email": has_email,
         "analyzed": analyzed,
         "readme": readme,
     }
@@ -152,8 +161,171 @@ def case_data(name):
     meta["hayabusa"] = load_hayabusa(os.path.join(res, "hayabusa.csv"))
     meta["sigma"] = load_sigma(os.path.join(res, "chainsaw"))
     meta["zeek"] = load_zeek(os.path.join(res, "zeek"))
+    meta["emails"] = [parse_email(os.path.join(CASES, name, "evidence", f))
+                      for f in meta["evidence"] if f.lower().endswith(EMAIL_EXT)]
     meta["notes"] = load_notes(name)
+    meta["iocs"] = extract_iocs(meta)
     return meta
+
+
+class LinkParser(html.parser.HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.links, self.images, self._href, self._text = [], [], None, []
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag == "a" and a.get("href"):
+            self._href, self._text = a["href"], []
+        elif tag == "img" and a.get("src"):
+            self.images.append({"src": a["src"], "width": a.get("width", ""), "height": a.get("height", "")})
+
+    def handle_data(self, data):
+        if self._href is not None:
+            self._text.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "a" and self._href is not None:
+            self.links.append({"href": self._href, "text": " ".join("".join(self._text).split())})
+            self._href = None
+
+
+URL_RE = re.compile(r"https?://[^\s<>\"')]+", re.I)
+
+
+def host_of(url):
+    m = re.match(r"https?://([^/:?#]+)", url, re.I)
+    return m.group(1).lower() if m else ""
+
+
+def parse_email(path):
+    msg = email.message_from_bytes(open(path, "rb").read(), policy=email.policy.default)
+    headers = [(k, str(v)) for k, v in msg.items()]
+    hops = []
+    for r in msg.get_all("Received", []) or []:
+        r = " ".join(str(r).split())
+        ips = re.findall(r"\[?(\d{1,3}(?:\.\d{1,3}){3})\]?", r)
+        frm = re.search(r"from\s+(\S+)", r)
+        by = re.search(r"by\s+(\S+)", r)
+        date = r.rsplit(";", 1)[1].strip() if ";" in r else ""
+        hops.append({"from": frm.group(1) if frm else "", "by": by.group(1) if by else "",
+                     "ips": list(dict.fromkeys(ips)), "date": date, "raw": r})
+    hops.reverse()
+    auth = " ".join(str(a) for a in (msg.get_all("Authentication-Results", []) or []))
+    results = {k: (re.search(k + r"=(\w+)", auth, re.I) or [None, ""])[1].lower() for k in ("spf", "dkim", "dmarc")}
+    text, html_body = "", ""
+    attachments = []
+    for part in msg.walk():
+        if part.is_multipart():
+            continue
+        if part.get_content_disposition() == "attachment" or part.get_filename():
+            data = part.get_payload(decode=True) or b""
+            attachments.append({"name": part.get_filename() or "", "type": part.get_content_type(), "size": len(data),
+                                "md5": hashlib.md5(data).hexdigest(), "sha1": hashlib.sha1(data).hexdigest(),
+                                "sha256": hashlib.sha256(data).hexdigest()})
+        elif part.get_content_type() == "text/plain" and not text:
+            text = part.get_content()
+        elif part.get_content_type() == "text/html" and not html_body:
+            html_body = part.get_content()
+    lp = LinkParser()
+    if html_body:
+        lp.feed(html_body)
+    links = lp.links[:]
+    seen = {l["href"] for l in links}
+    for u in URL_RE.findall(text):
+        if u not in seen:
+            links.append({"href": u, "text": ""})
+            seen.add(u)
+    for l in links:
+        shown = URL_RE.search(l["text"] or "")
+        l["host"] = host_of(l["href"])
+        l["mismatch"] = bool(shown) and host_of(shown.group(0)) != l["host"]
+    addr = lambda h: (email.utils.parseaddr(str(msg.get(h, "")))[1] or "").lower()
+    return {
+        "file": os.path.basename(path),
+        "subject": str(msg.get("Subject", "")), "from": str(msg.get("From", "")), "to": str(msg.get("To", "")),
+        "reply_to": str(msg.get("Reply-To", "")), "return_path": str(msg.get("Return-Path", "")),
+        "date": str(msg.get("Date", "")), "message_id": str(msg.get("Message-ID", "")),
+        "from_addr": addr("From"), "reply_addr": addr("Reply-To"), "return_addr": addr("Return-Path"),
+        "auth": results, "auth_raw": " ".join(auth.split()), "hops": hops, "headers": headers,
+        "text": text, "html": bool(html_body), "links": links, "images": lp.images, "attachments": attachments,
+    }
+
+
+PRIVATE_NETS = [ipaddress.ip_network(n) for n in ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10")]
+IP_RE = re.compile(r"(?<![\d.])(\d{1,3}(?:\.\d{1,3}){3})(?![\d.])")
+HASH_RE = re.compile(r"(?<![0-9a-fA-F])([0-9a-fA-F]{64}|[0-9a-fA-F]{40}|[0-9a-fA-F]{32})(?![0-9a-fA-F-])")
+
+
+def extract_iocs(meta):
+    found = {}
+
+    def add(kind, value, source):
+        value = str(value).strip().rstrip(".")
+        if not value or value in ("-", "(empty)"):
+            return
+        if kind == "ip":
+            try:
+                ip = ipaddress.ip_address(value)
+            except ValueError:
+                return
+            if ip.is_loopback or ip.is_unspecified or ip.is_multicast or ip.is_link_local or str(ip) == "255.255.255.255":
+                return
+            scope = "internal" if any(ip in n for n in PRIVATE_NETS) else "external"
+        else:
+            scope = ""
+        key = (kind, value.lower())
+        e = found.setdefault(key, {"type": kind, "value": value, "scope": scope, "sources": [], "count": 0})
+        e["count"] += 1
+        if source not in e["sources"]:
+            e["sources"].append(source)
+
+    def scan(text, source):
+        for ip in IP_RE.findall(text or ""):
+            add("ip", ip, source)
+        for h in HASH_RE.findall(text or ""):
+            add({64: "sha256", 40: "sha1", 32: "md5"}[len(h)], h.lower(), source)
+
+    for r in meta.get("hayabusa") or []:
+        scan(r["details"] + " " + r["extra"], "Hayabusa")
+    for r in meta.get("sigma") or []:
+        scan(r["data"], "Sigma")
+    z = meta.get("zeek") or {}
+    for r in (z.get("conn") or {}).get("rows", []):
+        add("ip", r.get("id.orig_h", ""), "Zeek conn")
+        add("ip", r.get("id.resp_h", ""), "Zeek conn")
+    for r in (z.get("dns") or {}).get("rows", []):
+        q = r.get("query", "")
+        if q and not q.endswith(".arpa"):
+            add("domain", q.lower(), "Zeek dns")
+    for r in (z.get("http") or {}).get("rows", []):
+        add("domain", r.get("host", "").lower(), "Zeek http")
+    for r in (z.get("ssl") or {}).get("rows", []):
+        add("domain", r.get("server_name", "").lower(), "Zeek ssl")
+    for r in (z.get("files") or {}).get("rows", []):
+        for k in ("md5", "sha1", "sha256"):
+            add(k, r.get(k, "").lower(), "Zeek files")
+    for m in meta.get("emails") or []:
+        for k in ("from_addr", "reply_addr", "return_addr"):
+            if m[k]:
+                add("email", m[k], "Email headers")
+                add("domain", m[k].split("@")[-1], "Email headers")
+        for h in m["hops"]:
+            for ip in h["ips"]:
+                add("ip", ip, "Email Received")
+            if h["from"] and "." in h["from"] and not h["from"].startswith("["):
+                add("domain", h["from"].lower(), "Email Received")
+        for l in m["links"]:
+            add("url", l["href"], "Email links")
+            add("domain", l["host"], "Email links")
+        for i in m["images"]:
+            add("url", i["src"], "Email images")
+        for a in m["attachments"]:
+            add("file", a["name"], "Email attachment")
+            for k in ("md5", "sha1", "sha256"):
+                add(k, a[k], "Email attachment")
+    order = {"ip": 0, "domain": 1, "url": 2, "email": 3, "file": 4, "sha256": 5, "sha1": 6, "md5": 7}
+    return sorted(found.values(), key=lambda e: (order.get(e["type"], 9), e["scope"] == "internal", -e["count"]))
 
 
 def flatten(obj, prefix="", out=None):
@@ -223,7 +395,7 @@ def run_analysis(name):
 
 def next_case_id():
     nums = [int(m.group(1)) for n in os.listdir(CASES) if (m := re.fullmatch(r"case-(\d+)", n))]
-    return f"case-{max(nums + [7]) + 1:02d}"
+    return f"case-{max(nums + [10]) + 1:02d}"
 
 
 def safe_filename(fn):
@@ -298,8 +470,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json({"error": "not found"}, 404)
         if url.path == "/api/upload":
             fn = safe_filename(q.get("file", ["evidence"])[0])
-            if not fn.lower().endswith(EVTX_EXT + PCAP_EXT):
-                return self.send_json({"error": "Only .evtx, .pcap and .pcapng files are supported"}, 400)
+            if not fn.lower().endswith(EVTX_EXT + PCAP_EXT + EMAIL_EXT):
+                return self.send_json({"error": "Only .evtx, .pcap, .pcapng and .eml files are supported"}, 400)
             n = int(self.headers.get("Content-Length") or 0)
             if n > MAX_UPLOAD:
                 return self.send_json({"error": "File is larger than 500 MB"}, 413)

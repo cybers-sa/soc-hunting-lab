@@ -2,7 +2,7 @@
 
 # مختبر صيد التهديدات SOC
 
-مختبر عملي لمحللي مراكز العمليات الأمنية (SOC): تحقيق في سجلات هجمات حقيقية من أنظمة ويندوز وحركة الشبكة، باستخدام أدوات الصيد والكشف المستخدمة في الميدان.
+مختبر عملي لمحللي مراكز العمليات الأمنية (SOC): تحقيق في سجلات هجمات حقيقية من أنظمة ويندوز وحركة الشبكة وإيميلات التصيد، باستخدام أدوات الصيد والكشف المستخدمة في الميدان.
 
 يعمل بالكامل من المتصفح عبر **GitHub Codespaces**، بدون تثبيت أي برنامج.
 
@@ -28,13 +28,29 @@
 | **Sigma Detections** | الأحداث المطابقة لقواعد Sigma |
 | **Raw Events** | كل أحداث السجل مع البحث والتصفية حسب رقم الحدث |
 | **DNS / Connections / Zeek Logs** | سجلات Zeek لقضايا الشبكة |
-| **Investigation** | السيناريو، والإجابة عن الأسئلة، وكتابة تقرير الحادثة وتحميله |
+| **Email** | تحليل الإيميل: المرسل و Reply-To، و SPF و DKIM و DMARC، ومسار الإيميل، والروابط، والمرفقات وبصماتها |
+| **Search** | البحث في كل البيانات بلغة استعلام بصيغة Splunk (SPL)، مع أمثلة جاهزة |
+| **IOCs** | مؤشرات الاختراق المستخرجة تلقائيًا، مع روابط فحصها في VirusTotal و AbuseIPDB وغيرها، وتصنيف كل مؤشر |
+| **Investigation** | السيناريو، والإجابة عن الأسئلة، وقرار الفرز (True Positive أو False Positive)، وكتابة تقرير الحادثة وتحميله |
 
 الإجابات والتقرير تُحفظ تلقائيًا.
 
+### أمثلة على الاستعلامات
+
+```
+index=windows | stats count by EventID | sort -count
+index=windows EventID=1 | stats count by ParentImage, Image
+index=windows EventID=4625 OR EventID=4771 | stats count by TargetUserName, IpAddress
+index=alerts level=high | table _time Computer rule
+index=zeek sourcetype=dns | top limit=10 query
+index=zeek sourcetype=conn | stats sum(orig_bytes) as sent by id.orig_h, id.resp_h | sort -sent
+```
+
+الأوامر المدعومة: `stats` و `top` و `rare` و `timechart` و `table` و `sort` و `head` و `tail` و `where` و `dedup` و `rename` و `eval` و `search`.
+
 ### تحليل ملفاتك
 
-اضغط **+ New Case**، واكتب عنوان القضية، وارفع ملفات `.evtx` أو `.pcap` أو `.pcapng`، ثم **Create and Analyze**. تظهر القضية تحت **My Cases**.
+اضغط **+ New Case**، واكتب عنوان القضية، وارفع ملفات `.evtx` أو `.pcap` أو `.pcapng` أو `.eml`، ثم **Create and Analyze**. تظهر القضية تحت **My Cases**.
 
 استخدم بيانات المختبرات وتحديات CTF فقط، ولا ترفع سجلات من بيئة عمل حقيقية.
 
@@ -69,6 +85,9 @@
 | [05](cases/case-05/README.md) | تفريغ ذاكرة عملية | متوسط | Sysmon |
 | [06](cases/case-06/README.md) | سرقة بيانات الدومين | متقدم | Security (DC) |
 | [07](cases/case-07/README.md) | قناة تحكم مخفية | متقدم | PCAP |
+| [08](cases/case-08/README.md) | سرقة كلمة المرور | مبتدئ | Email |
+| [09](cases/case-09/README.md) | فاتورة متأخرة | متوسط | Email |
+| [10](cases/case-10/README.md) | بلاغ من موظف | مبتدئ | Email |
 
 ## مخرجات كل قضية
 

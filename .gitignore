@@ -1,7 +1,9 @@
 tools/
 data/
 cases/*
-!cases/case-0[1-7]/
-cases/*/evidence/
+!cases/case-0[1-9]/
+!cases/case-10/
+cases/case-0[1-7]/evidence/
 cases/*/results/
 cases/*/notes.json
+__pycache__/

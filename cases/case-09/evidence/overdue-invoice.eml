@@ -1,0 +1,48 @@
+Received: from mx1.contoso.com (10.10.5.10) by EX01.contoso.com (10.10.5.20)
+ with Microsoft SMTP Server id 15.2.1544.4; Tue, 22 Sep 2026 11:47:15 +0000
+Received: from smtp.northwindtraders-mail.com (smtp.northwindtraders-mail.com
+ [198.51.100.23]) by mx1.contoso.com (Postfix) with ESMTP id 9C11B0A7 for
+ <finance@contoso.com>; Tue, 22 Sep 2026 11:47:12 +0000
+Received: from [192.168.1.14] (unknown [198.51.100.77]) by
+ smtp.northwindtraders-mail.com with ESMTPSA id 77aa31; Tue, 22 Sep 2026
+ 11:47:09 +0000
+Authentication-Results: mx1.contoso.com; spf=softfail (domain of transitioning
+ ap@fabrikam.com does not designate 198.51.100.23 as permitted sender)
+ smtp.mailfrom=fabrikam.com; dkim=fail (signature did not verify)
+ header.d=fabrikam.com; dmarc=fail action=quarantine header.from=fabrikam.com
+Return-Path: <ap@fabrikam.com>
+From: Fabrikam Accounts Payable <ap@fabrikam.com>
+Reply-To: Fabrikam Billing <fabrikam.billing@northwindtraders-mail.com>
+To: finance@contoso.com
+Subject: RE: Overdue invoice INV-20431 - final notice
+Date: Tue, 22 Sep 2026 14:47:05 +0300
+Message-ID: <a71c2f0e9b@smtp.northwindtraders-mail.com>
+X-Mailer: Microsoft Outlook 16.0
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============8371898314324940680=="
+
+--===============8371898314324940680==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hello Finance team,
+
+Our records show invoice INV-20431 (SAR 48,750.00) is now 30 days overdue. Pl=
+ease review the attached invoice and process the payment today to avoid servi=
+ce suspension.
+
+The invoice is password protected for your security. Password: 20431
+
+Best regards,
+Fabrikam Accounts Payable
+
+--===============8371898314324940680==
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="INV-20431.pdf.iso"
+MIME-Version: 1.0
+
+VHJhaW5pbmcgc2FtcGxlIGZvciBTT0MgSHVudGluZyBMYWIuIFRoaXMgZmlsZSBpcyBub3QgYW4g
+ZXhlY3V0YWJsZS4NCg==
+
+--===============8371898314324940680==--
