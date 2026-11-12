@@ -51,7 +51,8 @@ docker pull -q zeek/zeek:latest >/dev/null
 sudo ln -sf "$LAB/bin/zeek-run" /usr/local/bin/zeek-run
 sudo ln -sf "$LAB/bin/zeek-cut" /usr/local/bin/zeek-cut
 sudo ln -sf "$LAB/bin/hunt" /usr/local/bin/hunt
-chmod +x "$LAB"/bin/zeek-run "$LAB"/bin/zeek-cut "$LAB"/bin/hunt
+sudo ln -sf "$LAB/bin/dashboard" /usr/local/bin/dashboard
+chmod +x "$LAB"/bin/zeek-run "$LAB"/bin/zeek-cut "$LAB"/bin/hunt "$LAB"/bin/dashboard
 
 echo "==> Downloading datasets..."
 [ -d "$DATA/evtx" ] || git clone -q --depth 1 https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES.git "$DATA/evtx"

@@ -10,10 +10,21 @@
     "storage": "32gb"
   },
   "postCreateCommand": "bash setup.sh",
-  "postAttachCommand": "cat bin/welcome.txt",
+  "postAttachCommand": "bash bin/dashboard && cat bin/welcome.txt",
   "customizations": {
     "vscode": {
-      "extensions": ["mechatroner.rainbow-csv"]
+      "extensions": [
+        "mechatroner.rainbow-csv"
+      ]
+    }
+  },
+  "forwardPorts": [
+    8000
+  ],
+  "portsAttributes": {
+    "8000": {
+      "label": "SOC Dashboard",
+      "onAutoForward": "openBrowser"
     }
   }
 }
