@@ -2,6 +2,7 @@
 # Start the SOC dashboard on port 8000 (runs in the background).
 LAB="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 if ! curl -fs -o /dev/null http://localhost:8000/api/cases; then
+  command -v python3 >/dev/null || sudo apt-get install -y -qq python3 >/dev/null
   nohup setsid python3 "$LAB/dashboard/server.py" >/tmp/soc-dashboard.log 2>&1 < /dev/null &
   for _ in $(seq 1 20); do
     curl -fs -o /dev/null http://localhost:8000/api/cases && break
@@ -9,8 +10,9 @@ if ! curl -fs -o /dev/null http://localhost:8000/api/cases; then
   done
 fi
 if [ -n "${CODESPACE_NAME:-}" ]; then
-  gh codespace ports visibility 8000:public -c "$CODESPACE_NAME" >/dev/null 2>&1 || true
+  timeout 15 gh codespace ports visibility 8000:public -c "$CODESPACE_NAME" >/dev/null 2>&1 || true
   echo "SOC Dashboard: https://${CODESPACE_NAME}-8000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-app.github.dev}"
 else
   echo "SOC Dashboard: http://localhost:8000"
 fi
+curl -fs -o /dev/null http://localhost:8000/api/cases || { echo "Dashboard failed to start:"; tail -5 /tmp/soc-dashboard.log; }

@@ -13,7 +13,7 @@ if [ -n "${GITHUB_TOKEN:-}" ]; then AUTH=(-H "Authorization: Bearer $GITHUB_TOKE
 
 echo "==> Installing base packages..."
 sudo apt-get update -qq
-sudo apt-get install -y -qq jq unzip >/dev/null
+sudo apt-get install -y -qq jq unzip python3 >/dev/null
 
 echo "==> Installing Hayabusa ${HAYABUSA_VER}..."
 if [ ! -d "$TOOLS/hayabusa" ]; then
