@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # Start the SOC dashboard on port 8000 (runs in the background).
 LAB="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
-if curl -fs -o /dev/null http://localhost:8000/api/cases; then
-  echo "SOC Dashboard is running on port 8000"
-  exit 0
+if ! curl -fs -o /dev/null http://localhost:8000/api/cases; then
+  nohup setsid python3 "$LAB/dashboard/server.py" >/tmp/soc-dashboard.log 2>&1 < /dev/null &
+  for _ in $(seq 1 20); do
+    curl -fs -o /dev/null http://localhost:8000/api/cases && break
+    sleep 0.5
+  done
 fi
-nohup setsid python3 "$LAB/dashboard/server.py" >/tmp/soc-dashboard.log 2>&1 < /dev/null &
-for _ in $(seq 1 20); do
-  curl -fs -o /dev/null http://localhost:8000/api/cases && break
-  sleep 0.5
-done
-echo "SOC Dashboard is running on port 8000"
+if [ -n "${CODESPACE_NAME:-}" ]; then
+  gh codespace ports visibility 8000:public -c "$CODESPACE_NAME" >/dev/null 2>&1 || true
+  echo "SOC Dashboard: https://${CODESPACE_NAME}-8000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-app.github.dev}"
+else
+  echo "SOC Dashboard: http://localhost:8000"
+fi
