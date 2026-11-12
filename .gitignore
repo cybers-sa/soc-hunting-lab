@@ -1,4 +1,7 @@
 tools/
 data/
+cases/*
+!cases/case-0[1-7]/
 cases/*/evidence/
 cases/*/results/
+cases/*/notes.json

@@ -10,38 +10,44 @@
 :root{
   --bg:#0b1016; --panel:#121a23; --panel2:#17212c; --line:#223040; --text:#dbe4ee; --muted:#8597aa;
   --accent:#3fb6c9; --critical:#e5484d; --high:#f2853a; --medium:#e5c23d; --low:#4fa3e0; --informational:#71808f;
-  --ok:#3fbf7f; --mono:"JetBrains Mono",ui-monospace,monospace;
+  --ok:#3fbf7f; --mono:"JetBrains Mono",ui-monospace,monospace; --ar:"IBM Plex Sans Arabic",sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--text);font-family:Inter,"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:14px;line-height:1.6}
 button{font:inherit;color:inherit;cursor:pointer}
-.app{display:grid;grid-template-columns:270px 1fr;height:100vh}
+input,textarea,select{font:inherit;color:var(--text)}
+.app{display:grid;grid-template-columns:280px 1fr;height:100vh}
 aside{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
 .brand{padding:18px 18px 14px;border-bottom:1px solid var(--line)}
-.brand b{display:block;font-size:16px;letter-spacing:.2px}
+.brand b{display:block;font-size:16px}
 .brand span{color:var(--muted);font-size:12px}
-.cases{overflow:auto;padding:8px}
-.case-btn{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:10px 12px;margin-bottom:4px}
+.new-btn{margin:12px 12px 4px;background:var(--accent);color:#04161a;border:0;border-radius:8px;padding:9px 12px;font-weight:600}
+.cases{overflow:auto;padding:4px 8px 16px}
+.group{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin:14px 10px 6px}
+.case-btn{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:9px 12px;margin-bottom:3px}
 .case-btn:hover{background:var(--panel2)}
 .case-btn.active{background:var(--panel2);border-color:var(--line)}
-.case-btn .num{font-family:var(--mono);color:var(--accent);font-size:12px}
+.case-btn .num{font-family:var(--mono);color:var(--accent);font-size:11.5px}
 .case-btn .t{display:block;font-weight:600}
-.case-btn .meta{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px}
+.case-btn .meta{display:flex;gap:7px;align-items:center;color:var(--muted);font-size:12px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--informational);display:inline-block}
 .dot.on{background:var(--ok)}
 main{overflow:auto;min-width:0}
-.head{position:sticky;top:0;z-index:5;background:rgba(11,16,22,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:16px 24px 0}
+.head{position:sticky;top:0;z-index:5;background:rgba(11,16,22,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:16px 24px 0}
 .head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .head h1{margin:0;font-size:20px}
 .sub{color:var(--muted);font-size:12.5px;display:flex;gap:14px;flex-wrap:wrap;margin-top:2px}
 .sub code{font-family:var(--mono);color:var(--text)}
-.run{background:var(--accent);color:#04161a;border:0;border-radius:8px;padding:8px 16px;font-weight:600}
-.run:disabled{opacity:.6;cursor:wait}
-.tabs{display:flex;gap:4px;margin-top:14px}
-.tab{background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px;color:var(--muted);font-weight:500}
+.actions{display:flex;gap:8px}
+.btn{background:var(--accent);color:#04161a;border:0;border-radius:8px;padding:8px 16px;font-weight:600}
+.btn.ghost{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+.btn.danger{background:none;color:var(--critical);border:1px solid #4a2326}
+.btn:disabled{opacity:.6;cursor:wait}
+.tabs{display:flex;gap:4px;margin-top:14px;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px;color:var(--muted);font-weight:500;white-space:nowrap}
 .tab.active{color:var(--text);border-color:var(--accent)}
-.content{padding:20px 24px 40px}
+.content{padding:20px 24px 48px}
 .grid{display:grid;gap:14px}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
@@ -49,10 +55,12 @@ main{overflow:auto;min-width:0}
 .kpi .l{color:var(--muted);font-size:12.5px}
 .kpi::before{content:"";position:absolute;inset:0 auto auto 0;width:3px;height:100%;background:var(--c,var(--accent))}
 .two{grid-template-columns:1fr 1fr}
+.mt{margin-top:14px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
 .card h3{margin:0 0 12px;font-size:14px;font-weight:600;color:var(--muted)}
+.section-title{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin:24px 0 10px}
 .bars .row{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:10px;align-items:center;margin-bottom:8px}
-.bars .lbl{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:left}
+.bars .lbl{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bars .track{grid-column:1/-1;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:-4px}
 .bars .fill{height:100%;border-radius:3px;background:var(--accent)}
 .bars .n{font-family:var(--mono);font-size:12px;text-align:right}
@@ -63,40 +71,59 @@ main{overflow:auto;min-width:0}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--muted)}
 .chip.on{color:var(--text);border-color:var(--c,var(--accent));background:var(--panel2)}
-.search{flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;color:var(--text);font:inherit}
+.search,.select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px}
+.search{flex:1;min-width:200px}
 .count{color:var(--muted);font-size:12.5px}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
 th{position:sticky;top:0;background:var(--panel2);color:var(--muted);font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
 td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+td.mono{white-space:nowrap}
 tr.r{cursor:pointer}
 tr.r:hover td{background:var(--panel2)}
-.mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
-td.mono{white-space:nowrap}
-.detail td{white-space:normal}
-.ltr{direction:ltr;text-align:left;unicode-bidi:isolate}
-.wrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:auto;max-height:70vh}
+.mono{font-family:var(--mono)}
+.wrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:auto;max-height:72vh}
 .badge{display:inline-block;padding:1px 8px;border-radius:4px;font-size:11.5px;font-weight:600;color:#0b1016;background:var(--c)}
-.detail td{background:#0e151d;padding:12px 16px}
-.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;font-family:var(--mono);font-size:12px;direction:ltr;text-align:left}
+.detail td{background:#0e151d;padding:12px 16px;white-space:normal}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;font-family:var(--mono);font-size:12px}
 .kv .k{color:var(--accent)}
 .kv .v{word-break:break-all;white-space:pre-wrap}
-.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.trunc{max-width:560px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more{display:block;margin:12px auto 0}
+.empty{text-align:center;padding:56px 20px;color:var(--muted)}
 .empty b{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
-.readme{max-width:860px;direction:rtl;text-align:right;font-family:"IBM Plex Sans Arabic",sans-serif}
-.readme h1{display:none}
-.readme h2{font-size:16px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-top:22px}
-.readme pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;direction:ltr;text-align:left;overflow:auto;font-family:var(--mono);font-size:12.5px}
-.readme code{font-family:var(--mono);background:var(--panel2);padding:0 4px;border-radius:4px;direction:ltr;unicode-bidi:isolate}
-.readme li{margin:6px 0}
-.trunc{max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.log{background:#05090d;border:1px solid var(--line);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;direction:ltr;text-align:left;white-space:pre-wrap;max-height:260px;overflow:auto;margin-top:12px}
-@media (max-width:900px){.app{grid-template-columns:1fr;height:auto}aside{border-right:0;border-bottom:1px solid var(--line)}.cases{display:flex;overflow-x:auto}.case-btn{min-width:200px}.two{grid-template-columns:1fr}main{overflow:visible}}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;max-width:820px;margin:22px auto 0;text-align:left}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.step .n{font-family:var(--mono);color:var(--accent);font-size:12px}
+.ar{direction:rtl;text-align:right;font-family:var(--ar)}
+.ar code{font-family:var(--mono);direction:ltr;unicode-bidi:isolate;background:var(--panel2);padding:0 4px;border-radius:4px}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.q .qt{margin-bottom:8px}
+.q .qt .qn{font-family:var(--mono);color:var(--accent);margin-left:8px;direction:ltr;unicode-bidi:isolate}
+textarea{width:100%;min-height:64px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px;resize:vertical;line-height:1.55}
+textarea:focus,input:focus,select:focus{outline:1px solid var(--accent);border-color:var(--accent)}
+.field label{display:block;font-weight:600;margin-bottom:6px}
+.field small{color:var(--muted);font-weight:400;margin-left:6px}
+.save{color:var(--muted);font-size:12.5px}
+.log{background:#05090d;border:1px solid var(--line);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;white-space:pre-wrap;max-height:260px;overflow:auto;margin-bottom:14px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;width:min(560px,100%)}
+.modal h2{margin:0 0 4px;font-size:18px}
+.modal p{margin:0 0 16px;color:var(--muted);font-size:13px}
+.modal input[type=text],.modal textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin-bottom:12px}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:24px;text-align:center;color:var(--muted);cursor:pointer;margin-bottom:12px}
+.drop.over{border-color:var(--accent);color:var(--text)}
+.files{font-family:var(--mono);font-size:12px;margin:-4px 0 12px}
+.files div{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.modal .row{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+.err{color:var(--critical);font-size:13px;margin-bottom:10px}
+@media (max-width:900px){.app{grid-template-columns:1fr;height:auto}aside{border-right:0;border-bottom:1px solid var(--line)}.cases{max-height:260px}.two{grid-template-columns:1fr}main{overflow:visible}}
 </style>
 </head>
 <body>
 <div class="app">
   <aside>
     <div class="brand"><b>SOC Hunting Lab</b><span>Threat Hunting Dashboard</span></div>
+    <button class="new-btn" id="newCase">+ New Case</button>
     <div class="cases" id="cases"></div>
   </aside>
   <main>
@@ -104,125 +131,169 @@ td.mono{white-space:nowrap}
     <div class="content" id="content"></div>
   </main>
 </div>
+<div id="modal"></div>
 <script>
 const LEVELS = ["critical","high","medium","low","informational"];
-const LEVEL_AR = {critical:"Critical",high:"High",medium:"Medium",low:"Low",informational:"Info"};
+const LEVEL_NAME = {critical:"Critical",high:"High",medium:"Medium",low:"Low",informational:"Info"};
 const CASE_EN = {"case-01":"Log Clearing","case-02":"Password Spraying","case-03":"Remote Execution","case-04":"Logon Screen Backdoor","case-05":"Process Memory Dump","case-06":"Domain Credential Theft","case-07":"Covert C2 Channel"};
 const LEVEL_EN = {"مبتدئ":"Beginner","متوسط":"Intermediate","متقدم":"Advanced"};
+const REPORT = [
+  ["summary","Executive summary","What happened, in a few lines"],
+  ["assets","Affected hosts and accounts",""],
+  ["timeline","Timeline (UTC)","Key events in order"],
+  ["mitre","MITRE ATT&CK techniques","e.g. T1003.006"],
+  ["iocs","Indicators of compromise (IOCs)","IPs, domains, files, hashes, accounts"],
+  ["recommendations","Recommendations","Containment, eradication and detection improvements"],
+];
 const caseTitle = c => CASE_EN[c.id] || c.title;
 const caseLevel = c => LEVEL_EN[c.level] || c.level;
-const state = { cases: [], current: null, data: null, tab: "overview", filter: new Set(LEVELS), q: "", open: null };
+const state = { cases: [], current: null, data: null, tab: "overview", filter: new Set(LEVELS), q: "", open: null, limit: 300, eid: "", raw: {}, zlog: "", runLog: "" };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const cssLevel = l => `var(--${LEVELS.includes(l) ? l : "informational"})`;
-
 function parseTime(t){
   if (!t) return NaN;
   if (/^\d+(\.\d+)?$/.test(t)) return parseFloat(t) * 1000;
-  let s = t.trim().replace(" UTC", "Z").replace(/^(\d{4}-\d\d-\d\d) /, "$1T").replace(/ ([+-]\d\d:\d\d)$/, "$1");
+  const s = String(t).trim().replace(" UTC","Z").replace(/^(\d{4}-\d\d-\d\d) /,"$1T").replace(/ ([+-]\d\d:\d\d)$/,"$1");
   return Date.parse(s);
 }
 const fmtTime = ms => isNaN(ms) ? "" : new Date(ms).toISOString().replace("T"," ").slice(0,19);
 function count(arr, key){
   const m = new Map();
-  for (const x of arr){ const ks = Array.isArray(key(x)) ? key(x) : [key(x)]; for (const k of ks) if (k) m.set(k, (m.get(k)||0)+1); }
+  for (const x of arr){ let ks = key(x); ks = Array.isArray(ks) ? ks : [ks]; for (const k of ks) if (k !== "" && k != null) m.set(k, (m.get(k)||0)+1); }
   return [...m.entries()].sort((a,b)=>b[1]-a[1]);
 }
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  let j = {}; try { j = await r.json(); } catch(e) {}
+  if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+  return j;
+}
 
-async function api(path, opts){ const r = await fetch(path, opts); return r.json(); }
-
-async function loadCases(){
+/* ---------- cases ---------- */
+async function loadCases(select){
   state.cases = await api("/api/cases");
   renderCases();
-  const want = (location.hash.slice(1)) || (state.cases[0] && state.cases[0].id);
-  if (want) selectCase(want);
+  const want = select || location.hash.slice(1) || (state.cases[0] && state.cases[0].id);
+  if (want) await selectCase(state.cases.some(c=>c.id===want) ? want : state.cases[0].id);
 }
-
 function renderCases(){
-  $("#cases").innerHTML = state.cases.map(c => `
-    <button class="case-btn ${state.current===c.id?"active":""}" data-id="${c.id}">
+  const item = c => `<button class="case-btn ${state.current===c.id?"active":""}" data-id="${c.id}">
       <span class="num">${esc(c.id.toUpperCase())}</span>
       <span class="t">${esc(caseTitle(c))}</span>
-      <span class="meta"><span class="dot ${c.analyzed?"on":""}"></span>${c.analyzed?"Analyzed":"Not analyzed"} · ${esc(caseLevel(c))} · ${c.kind==="network"?"Network":"Windows"}</span>
-    </button>`).join("");
+      <span class="meta"><span class="dot ${c.analyzed?"on":""}"></span>${c.analyzed?"Analyzed":"Not analyzed"} · ${esc(caseLevel(c))}</span>
+    </button>`;
+  const lab = state.cases.filter(c=>!c.custom), mine = state.cases.filter(c=>c.custom);
+  $("#cases").innerHTML = `<div class="group">Lab cases</div>${lab.map(item).join("")}
+    <div class="group">My cases</div>${mine.length ? mine.map(item).join("") : `<div class="count" style="padding:0 12px">Use <b>+ New Case</b> to analyze your own .evtx or .pcap files.</div>`}`;
   document.querySelectorAll(".case-btn").forEach(b => b.onclick = () => selectCase(b.dataset.id));
 }
-
 async function selectCase(id){
-  state.current = id; state.open = null; state.q = ""; state.filter = new Set(LEVELS);
-  location.hash = id;
+  if (id !== state.current){ state.tab = "overview"; state.runLog = ""; }
+  state.current = id; state.open = null; state.q = ""; state.filter = new Set(LEVELS); state.limit = 300; state.eid = ""; state.zlog = "";
+  history.replaceState(null, "", "#" + id);
   renderCases();
   state.data = await api("/api/case?id=" + encodeURIComponent(id));
-  if (!["overview","questions"].includes(state.tab)) state.tab = "overview";
   render();
 }
-
 function tabsFor(d){
-  if (d.kind === "network") return [["overview","Overview"],["dns","DNS"],["conn","Connections"],["questions","Questions"]];
-  return [["overview","Overview"],["alerts","Hayabusa Alerts"],["sigma","Sigma Detections"],["questions","Questions"]];
+  const t = [["overview","Overview"]];
+  if (d.has_evtx) t.push(["alerts","Hayabusa Alerts"],["sigma","Sigma Detections"],["raw","Raw Events"]);
+  if (d.has_pcap) t.push(["dns","DNS"],["conn","Connections"],["zeek","Zeek Logs"]);
+  t.push(["investigation","Investigation"]);
+  return t;
 }
 
+/* ---------- layout ---------- */
 function render(){
   const d = state.data;
-  const analyzed = d.kind === "network" ? !!d.zeek : !!d.hayabusa;
+  const tools = [d.has_evtx && "Hayabusa + Chainsaw", d.has_pcap && "Zeek"].filter(Boolean).join(" and ");
   $("#head").innerHTML = `
     <div class="head-row">
       <div><h1>${esc(d.id.toUpperCase())}: ${esc(caseTitle(d))}</h1>
-        <div class="sub"><span>Level: ${esc(caseLevel(d))}</span><span>Evidence: ${d.evidence.map(e=>`<code>${esc(e)}</code>`).join(" ")}</span></div></div>
-      <button class="run" id="run">${analyzed ? "Re-analyze" : "Analyze Evidence"}</button>
+        <div class="sub"><span>Level: ${esc(caseLevel(d))}</span><span>Evidence: ${d.evidence.map(e=>`<code>${esc(e)}</code>`).join(" ") || "none"}</span></div></div>
+      <div class="actions">
+        ${d.custom ? `<button class="btn danger" id="del">Delete case</button>` : ""}
+        ${d.evidence.length ? `<button class="btn" id="run">${d.analyzed ? "Re-analyze" : "Analyze Evidence"}</button>` : ""}
+      </div>
     </div>
     <div class="tabs">${tabsFor(d).map(([k,v])=>`<button class="tab ${state.tab===k?"active":""}" data-t="${k}">${v}</button>`).join("")}</div>`;
-  document.querySelectorAll(".tab").forEach(b => b.onclick = () => { state.tab = b.dataset.t; state.open = null; render(); });
-  $("#run").onclick = runAnalysis;
+  document.querySelectorAll(".tab").forEach(b => b.onclick = () => { state.tab = b.dataset.t; state.open = null; state.q = ""; state.limit = 300; render(); });
+  if ($("#run")) $("#run").onclick = runAnalysis;
+  if ($("#del")) $("#del").onclick = deleteCase;
   const c = $("#content");
-  if (state.tab === "questions") return c.innerHTML = `<div class="readme">${md(d.readme)}</div>`;
-  if (!analyzed) return c.innerHTML = `<div class="empty"><b>This case has not been analyzed yet</b>Click "Analyze Evidence" to run ${d.kind==="network"?"Zeek":"Hayabusa and Chainsaw"} on the evidence.</div>`;
-  if (d.kind === "network") return renderNetwork(c, d);
-  renderWindows(c, d);
+  const log = state.runLog ? `<div class="log">${esc(state.runLog)}</div>` : "";
+  if (state.tab === "investigation") return renderInvestigation(c, d);
+  if (!d.analyzed && state.tab !== "raw"){
+    c.innerHTML = log + `<div class="empty"><b>This case has not been analyzed yet</b>Click <b>Analyze Evidence</b> to run ${tools || "the tools"} on the evidence.
+      <div class="steps">
+        <div class="step"><div class="n">01 · ANALYZE</div>Run the detection tools on the evidence with one click.</div>
+        <div class="step"><div class="n">02 · HUNT</div>Review alerts, detections and raw events to find what happened.</div>
+        <div class="step"><div class="n">03 · REPORT</div>Answer the questions and write the incident report in the Investigation tab.</div>
+      </div></div>`;
+    return;
+  }
+  c.innerHTML = log;
+  const box = document.createElement("div"); c.appendChild(box);
+  if (state.tab === "overview") return renderOverview(box, d);
+  if (["alerts","sigma"].includes(state.tab)) return renderWindowsTable(box, d);
+  if (state.tab === "raw") return renderRaw(box, d);
+  return renderNetworkTable(box, d);
 }
 
 async function runAnalysis(){
   const b = $("#run"); b.disabled = true; b.textContent = "Analyzing...";
-  const r = await api("/api/run?id=" + encodeURIComponent(state.current), {method:"POST"});
-  state.cases = await api("/api/cases");
-  await selectCase(state.current);
-  if (!r.ok) $("#content").insertAdjacentHTML("afterbegin", `<div class="log">${esc(r.output)}</div>`);
+  try {
+    const r = await api("/api/run?id=" + encodeURIComponent(state.current), {method:"POST"});
+    state.runLog = r.ok ? "" : r.output;
+  } catch(e){ state.runLog = e.message; }
+  delete state.raw[state.current];
+  const tab = state.tab;
+  state.cases = await api("/api/cases"); renderCases();
+  state.data = await api("/api/case?id=" + encodeURIComponent(state.current));
+  state.tab = tab; render();
+}
+async function deleteCase(){
+  if (!confirm(`Delete ${state.current.toUpperCase()} and its evidence?`)) return;
+  await api("/api/delete?id=" + encodeURIComponent(state.current), {method:"POST"});
+  state.current = null; await loadCases("case-01");
 }
 
 /* ---------- charts ---------- */
 function bars(entries, opts={}){
+  if (!entries.length) return `<div class="count">No data</div>`;
   const max = Math.max(1, ...entries.map(e=>e[1]));
   return `<div class="bars">${entries.slice(0, opts.limit||8).map(([k,n])=>`
     <div class="row"><span class="lbl" title="${esc(k)}">${esc(k)}</span><span class="n">${n}</span>
-    <div class="track"><div class="fill" style="width:${n/max*100}%;background:${opts.color?opts.color(k):"var(--accent)"}"></div></div></div>`).join("")}</div>`;
+    <div class="track"><div class="fill" style="width:${n/max*100}%;background:${opts.color||"var(--accent)"}"></div></div></div>`).join("")}</div>`;
 }
 function timeline(times, levels){
-  const pts = times.map((t,i)=>[t, levels ? levels[i] : null]).filter(p=>!isNaN(p[0]));
+  const pts = times.map((t,i)=>[t, levels ? levels[i] : "x"]).filter(p=>!isNaN(p[0]));
   if (!pts.length) return `<div class="count">No timestamps</div>`;
   let min = Math.min(...pts.map(p=>p[0])), max = Math.max(...pts.map(p=>p[0]));
-  if (max === min) { min -= 30000; max += 30000; }
+  if (max === min){ min -= 30000; max += 30000; }
   const N = 40, W = 800, H = 130, bw = W / N;
   const bins = Array.from({length:N}, () => ({}));
-  for (const [t,l] of pts){ const i = Math.min(N-1, Math.floor((t-min)/(max-min)*N)); bins[i][l||"x"] = (bins[i][l||"x"]||0)+1; }
-  const tot = bins.map(b => Object.values(b).reduce((a,c)=>a+c,0));
-  const top = Math.max(...tot);
+  for (const [t,l] of pts){ const i = Math.min(N-1, Math.floor((t-min)/(max-min)*N)); bins[i][l] = (bins[i][l]||0)+1; }
+  const top = Math.max(...bins.map(b => Object.values(b).reduce((a,c)=>a+c,0)));
   const order = levels ? [...LEVELS].reverse() : ["x"];
   let rects = "";
-  bins.forEach((b,i) => { let y = H; for (const l of order){ const n = b[l]||0; if(!n) continue; const h = n/top*(H-6); y -= h;
+  bins.forEach((b,i) => { let y = H; for (const l of order){ const n = b[l]||0; if (!n) continue; const h = n/top*(H-6); y -= h;
     rects += `<rect x="${i*bw+1}" y="${y}" width="${bw-2}" height="${h}" rx="1.5" fill="${l==="x"?"var(--accent)":cssLevel(l)}"><title>${n}</title></rect>`; } });
   return `<svg viewBox="0 0 ${W} ${H+20}" preserveAspectRatio="none">${rects}
-    <text x="0" y="${H+16}" fill="var(--muted)" font-size="11" font-family="JetBrains Mono">${fmtTime(min)}</text>
-    <text x="${W}" y="${H+16}" fill="var(--muted)" font-size="11" text-anchor="end" font-family="JetBrains Mono">${fmtTime(max)}</text></svg>`;
+    <text x="0" y="${H+16}" fill="var(--muted)" font-size="11" font-family="JetBrains Mono,monospace">${fmtTime(min)}</text>
+    <text x="${W}" y="${H+16}" fill="var(--muted)" font-size="11" text-anchor="end" font-family="JetBrains Mono,monospace">${fmtTime(max)}</text></svg>`;
 }
 const kpi = (v,l,c) => `<div class="kpi" style="--c:${c||"var(--accent)"}"><div class="v">${v}</div><div class="l">${l}</div></div>`;
 
-/* ---------- windows ---------- */
-function renderWindows(c, d){
-  const hb = d.hayabusa || [], sg = d.sigma || [];
-  if (state.tab === "overview"){
+/* ---------- overview ---------- */
+function renderOverview(box, d){
+  let html = "";
+  if (d.has_evtx){
+    const hb = d.hayabusa || [], sg = d.sigma || [];
     const byL = Object.fromEntries(LEVELS.map(l=>[l, hb.filter(r=>r.level===l).length]));
     const total = hb.length || 1;
-    c.innerHTML = `
+    html += `${d.has_pcap ? `<div class="section-title">Windows logs</div>` : ""}
       <div class="grid kpis">
         ${kpi(hb.length,"Hayabusa alerts")}
         ${kpi(byL.critical+byL.high,"Critical / High","var(--high)")}
@@ -230,118 +301,240 @@ function renderWindows(c, d){
         ${kpi(sg.length,"Sigma matched events","var(--low)")}
         ${kpi(new Set(hb.map(r=>r.computer)).size,"Hosts","var(--informational)")}
       </div>
-      <div class="card" style="margin-top:14px"><h3>Severity distribution</h3>
-        <div class="sev">${LEVELS.map(l=>byL[l]?`<div style="width:${byL[l]/total*100}%;background:${cssLevel(l)}" title="${LEVEL_AR[l]}: ${byL[l]}"></div>`:"").join("")}</div>
-        <div class="legend">${LEVELS.map(l=>`<span><i style="background:${cssLevel(l)}"></i>${LEVEL_AR[l]} ${byL[l]}</span>`).join("")}</div></div>
-      <div class="card timeline" style="margin-top:14px"><h3>Alert timeline (UTC)</h3>${timeline(hb.map(r=>parseTime(r.time)), hb.map(r=>r.level))}</div>
-      <div class="grid two" style="margin-top:14px">
+      <div class="card mt"><h3>Severity distribution</h3>
+        <div class="sev">${LEVELS.map(l=>byL[l]?`<div style="width:${byL[l]/total*100}%;background:${cssLevel(l)}" title="${LEVEL_NAME[l]}: ${byL[l]}"></div>`:"").join("")}</div>
+        <div class="legend">${LEVELS.map(l=>`<span><i style="background:${cssLevel(l)}"></i>${LEVEL_NAME[l]} ${byL[l]}</span>`).join("")}</div></div>
+      <div class="card timeline mt"><h3>Alert timeline (UTC)</h3>${timeline(hb.map(r=>parseTime(r.time)), hb.map(r=>r.level))}</div>
+      <div class="grid two mt">
         <div class="card"><h3>Top Hayabusa rules</h3>${bars(count(hb.filter(r=>r.level!=="informational"), r=>r.rule))}</div>
-        <div class="card"><h3>Top Sigma rules</h3>${sg.length?bars(count(sg, r=>r.rules), {color:()=>"var(--low)"}):`<div class="count">No matches</div>`}</div>
-        <div class="card"><h3>Event IDs</h3>${bars(count(hb, r=>r.eid ? "EID " + r.eid : ""), {color:()=>"var(--informational)"})}</div>
-        <div class="card"><h3>Hosts</h3>${bars(count(hb, r=>r.computer), {color:()=>"var(--informational)"})}</div>
+        <div class="card"><h3>Top Sigma rules</h3>${bars(count(sg, r=>r.rules), {color:"var(--low)"})}</div>
+        <div class="card"><h3>Event IDs</h3>${bars(count(hb, r=>r.eid ? "EID " + r.eid : ""), {color:"var(--informational)"})}</div>
+        <div class="card"><h3>Hosts</h3>${bars(count(hb, r=>r.computer), {color:"var(--informational)"})}</div>
       </div>`;
-    return;
   }
-  if (state.tab === "alerts"){
-    const q = state.q.toLowerCase();
-    const rows = hb.map((r,i)=>({...r,i})).filter(r => state.filter.has(r.level) && (!q || (r.rule+r.details+r.extra+r.computer+r.eid).toLowerCase().includes(q)));
-    c.innerHTML = toolbar(true, rows.length, hb.length) + `<div class="wrap"><table>
-      <thead><tr><th>Time (UTC)</th><th>Level</th><th>Rule</th><th>Host</th><th>EID</th><th>Details</th></tr></thead><tbody>
-      ${rows.map(r=>`<tr class="r" data-i="${r.i}"><td class="mono">${fmtTime(parseTime(r.time))}</td>
-        <td><span class="badge" style="--c:${cssLevel(r.level)}">${LEVEL_AR[r.level]||esc(r.level)}</span></td>
-        <td class="ltr">${esc(r.rule)}</td><td class="mono">${esc(r.computer)}</td><td class="mono">${esc(r.eid)}</td>
-        <td class="mono trunc">${esc(r.details)}</td></tr>
-        ${state.open===r.i?`<tr class="detail"><td colspan="6">${kvBlock((r.details+" ¦ "+r.extra).split(" ¦ "), ": ")}</td></tr>`:""}`).join("")}
-      </tbody></table></div>`;
-    bindToolbar(); bindRows(); return;
-  }
-  if (state.tab === "sigma"){
-    const q = state.q.toLowerCase();
-    const rows = sg.map((r,i)=>({...r,i})).filter(r => !q || (r.rules.join(" ")+r.data+r.computer+r.eid).toLowerCase().includes(q));
-    c.innerHTML = toolbar(false, rows.length, sg.length) + (sg.length ? `<div class="wrap"><table>
-      <thead><tr><th>Time (UTC)</th><th>Sigma rules</th><th>Host</th><th>EID</th></tr></thead><tbody>
-      ${rows.map(r=>`<tr class="r" data-i="${r.i}"><td class="mono">${fmtTime(parseTime(r.time))}</td>
-        <td class="ltr">${r.rules.map(esc).join("<br>")}</td><td class="mono">${esc(r.computer)}</td><td class="mono">${esc(r.eid)}</td></tr>
-        ${state.open===r.i?`<tr class="detail"><td colspan="4">${kvBlock(r.data.split("\n"), ": ")}</td></tr>`:""}`).join("")}
-      </tbody></table></div>` : `<div class="empty"><b>No Sigma matches</b>Use the Hayabusa alerts and raw logs for this case.</div>`);
-    bindToolbar(); bindRows(); return;
-  }
-}
-
-function kvBlock(lines, sep){
-  return `<div class="kv">${lines.filter(Boolean).map(l=>{ const i = l.indexOf(sep); return i>0
-    ? `<span class="k">${esc(l.slice(0,i).trim())}</span><span class="v">${esc(l.slice(i+sep.length))}</span>`
-    : `<span class="k"></span><span class="v">${esc(l)}</span>`; }).join("")}</div>`;
-}
-
-function toolbar(levels, n, total){
-  return `<div class="toolbar">${levels?LEVELS.map(l=>`<button class="chip ${state.filter.has(l)?"on":""}" data-l="${l}" style="--c:${cssLevel(l)}">${LEVEL_AR[l]}</button>`).join(""):""}
-    <input class="search" id="q" placeholder="Search..." value="${esc(state.q)}"><span class="count">${n} of ${total}</span></div>`;
-}
-function bindToolbar(){
-  document.querySelectorAll(".chip").forEach(b => b.onclick = () => { const l = b.dataset.l; state.filter.has(l) ? state.filter.delete(l) : state.filter.add(l); render(); });
-  const q = $("#q"); q.oninput = () => { state.q = q.value; const pos = q.selectionStart; render(); const n = $("#q"); n.focus(); n.setSelectionRange(pos,pos); };
-}
-function bindRows(){
-  document.querySelectorAll("tr.r").forEach(tr => tr.onclick = () => { const i = +tr.dataset.i; state.open = state.open===i ? null : i; const y = $("main").scrollTop; render(); $("main").scrollTop = y; });
-}
-
-/* ---------- network ---------- */
-function renderNetwork(c, d){
-  const dns = (d.zeek.dns||{}).rows || [], conn = (d.zeek.conn||{}).rows || [];
-  const base = q => q.split(".").slice(-2).join(".");
-  if (state.tab === "overview"){
-    c.innerHTML = `
+  if (d.has_pcap){
+    const z = d.zeek || {}, dns = (z.dns||{}).rows || [], conn = (z.conn||{}).rows || [];
+    const base = q => q.split(".").slice(-2).join(".");
+    html += `${d.has_evtx ? `<div class="section-title">Network traffic</div>` : ""}
       <div class="grid kpis">
         ${kpi(conn.length,"Connections")}
         ${kpi(dns.length,"DNS queries","var(--low)")}
         ${kpi(new Set(dns.map(r=>r.query)).size,"Unique names","var(--medium)")}
         ${kpi(new Set(conn.map(r=>r["id.orig_h"])).size,"Source hosts","var(--informational)")}
+        ${kpi(Object.keys(z).length,"Zeek logs","var(--informational)")}
       </div>
-      <div class="card timeline" style="margin-top:14px"><h3>DNS query timeline (UTC)</h3>${timeline(dns.map(r=>parseTime(r.ts)))}</div>
-      <div class="grid two" style="margin-top:14px">
+      <div class="card timeline mt"><h3>Connection timeline (UTC)</h3>${timeline(conn.map(r=>parseTime(r.ts)))}</div>
+      <div class="grid two mt">
         <div class="card"><h3>Top domains</h3>${bars(count(dns, r=>base(r.query||"")))}</div>
-        <div class="card"><h3>DNS record types</h3>${bars(count(dns, r=>r.qtype_name), {color:()=>"var(--medium)"})}</div>
-        <div class="card"><h3>Sources</h3>${bars(count(conn, r=>r["id.orig_h"]), {color:()=>"var(--informational)"})}</div>
-        <div class="card"><h3>Destinations and ports</h3>${bars(count(conn, r=>`${r["id.resp_h"]}:${r["id.resp_p"]}/${r.proto}`), {color:()=>"var(--informational)"})}</div>
+        <div class="card"><h3>DNS record types</h3>${bars(count(dns, r=>r.qtype_name), {color:"var(--medium)"})}</div>
+        <div class="card"><h3>Sources</h3>${bars(count(conn, r=>r["id.orig_h"]), {color:"var(--informational)"})}</div>
+        <div class="card"><h3>Destinations and ports</h3>${bars(count(conn, r=>`${r["id.resp_h"]}:${r["id.resp_p"]}/${r.proto}`), {color:"var(--informational)"})}</div>
       </div>`;
-    return;
   }
-  const isDns = state.tab === "dns";
-  const src = isDns ? dns : conn;
-  const cols = isDns ? ["ts","id.orig_h","id.resp_h","query","qtype_name","rcode_name","answers"]
-                     : ["ts","id.orig_h","id.orig_p","id.resp_h","id.resp_p","proto","service","duration","orig_bytes","resp_bytes","conn_state"];
+  box.innerHTML = html;
+}
+
+/* ---------- tables ---------- */
+function kvBlock(pairs){
+  return `<div class="kv">${pairs.filter(p=>p[0]||p[1]).map(([k,v])=>`<span class="k">${esc(k)}</span><span class="v">${esc(v)}</span>`).join("")}</div>`;
+}
+const splitKV = (lines, sep) => lines.filter(Boolean).map(l => { const i = l.indexOf(sep); return i > 0 ? [l.slice(0,i).trim(), l.slice(i+sep.length)] : ["", l]; });
+function toolbar(opts){
+  const n = opts.n, total = opts.total;
+  return `<div class="toolbar">${opts.levels ? LEVELS.map(l=>`<button class="chip ${state.filter.has(l)?"on":""}" data-l="${l}" style="--c:${cssLevel(l)}">${LEVEL_NAME[l]}</button>`).join("") : ""}
+    ${opts.select || ""}
+    <input class="search" id="q" placeholder="Search..." value="${esc(state.q)}"><span class="count">${n} of ${total}</span></div>`;
+}
+function bindToolbar(){
+  document.querySelectorAll(".chip").forEach(b => b.onclick = () => { const l = b.dataset.l; state.filter.has(l) ? state.filter.delete(l) : state.filter.add(l); render(); });
+  const q = $("#q");
+  let t; q.oninput = () => { clearTimeout(t); t = setTimeout(() => { state.q = q.value; state.limit = 300; const pos = q.selectionStart; render(); const n = $("#q"); if (n){ n.focus(); n.setSelectionRange(pos,pos); } }, 150); };
+  const s = $("#sel"); if (s) s.onchange = () => { if (state.tab === "zeek") state.zlog = s.value; else state.eid = s.value; state.limit = 300; render(); };
+  const m = $("#more"); if (m) m.onclick = () => { state.limit += 500; keepScroll(render); };
+}
+function keepScroll(fn){ const w = document.querySelector(".wrap"), y = w ? w.scrollTop : 0, my = $("main").scrollTop; fn(); const w2 = document.querySelector(".wrap"); if (w2) w2.scrollTop = y; $("main").scrollTop = my; }
+function bindRows(){
+  document.querySelectorAll("tr.r").forEach(tr => tr.onclick = () => { const i = +tr.dataset.i; state.open = state.open===i ? null : i; keepScroll(render); });
+}
+const moreBtn = (shown, total) => shown < total ? `<button class="btn ghost more" id="more">Show more (${total - shown} left)</button>` : "";
+
+function renderWindowsTable(box, d){
   const q = state.q.toLowerCase();
-  const rows = src.map((r,i)=>({r,i})).filter(({r}) => !q || cols.some(k => String(r[k]||"").toLowerCase().includes(q)));
-  c.innerHTML = toolbar(false, rows.length, src.length) + `<div class="wrap"><table>
-    <thead><tr>${cols.map(k=>`<th class="ltr">${k}</th>`).join("")}</tr></thead><tbody>
-    ${rows.map(({r,i})=>`<tr class="r" data-i="${i}">${cols.map(k=>`<td class="mono ${k==="answers"?"trunc":""}">${esc(k==="ts"?fmtTime(parseTime(r[k])):r[k])}</td>`).join("")}</tr>
-      ${state.open===i?`<tr class="detail"><td colspan="${cols.length}">${kvBlock(Object.entries(r).map(([k,v])=>k+"\u0000"+v), "\u0000")}</td></tr>`:""}`).join("")}
-    </tbody></table></div>`;
+  if (state.tab === "alerts"){
+    const hb = d.hayabusa || [];
+    const rows = hb.map((r,i)=>({...r,i})).filter(r => state.filter.has(r.level) && (!q || (r.rule+r.details+r.extra+r.computer+r.eid).toLowerCase().includes(q)));
+    const shown = rows.slice(0, state.limit);
+    box.innerHTML = toolbar({levels:true, n:rows.length, total:hb.length}) + `<div class="wrap"><table>
+      <thead><tr><th>Time (UTC)</th><th>Level</th><th>Rule</th><th>Host</th><th>EID</th><th>Details</th></tr></thead><tbody>
+      ${shown.map(r=>`<tr class="r" data-i="${r.i}"><td class="mono">${fmtTime(parseTime(r.time))}</td>
+        <td><span class="badge" style="--c:${cssLevel(r.level)}">${LEVEL_NAME[r.level]||esc(r.level)}</span></td>
+        <td>${esc(r.rule)}</td><td class="mono">${esc(r.computer)}</td><td class="mono">${esc(r.eid)}</td>
+        <td class="mono trunc">${esc(r.details)}</td></tr>
+        ${state.open===r.i?`<tr class="detail"><td colspan="6">${kvBlock(splitKV((r.details+" ¦ "+r.extra).split(" ¦ "), ": "))}</td></tr>`:""}`).join("")}
+      </tbody></table></div>${moreBtn(shown.length, rows.length)}`;
+  } else {
+    const sg = d.sigma || [];
+    const rows = sg.map((r,i)=>({...r,i})).filter(r => !q || (r.rules.join(" ")+r.data+r.computer+r.eid).toLowerCase().includes(q));
+    const shown = rows.slice(0, state.limit);
+    box.innerHTML = toolbar({n:rows.length, total:sg.length}) + (sg.length ? `<div class="wrap"><table>
+      <thead><tr><th>Time (UTC)</th><th>Sigma rules</th><th>Host</th><th>EID</th></tr></thead><tbody>
+      ${shown.map(r=>`<tr class="r" data-i="${r.i}"><td class="mono">${fmtTime(parseTime(r.time))}</td>
+        <td>${r.rules.map(esc).join("<br>")}</td><td class="mono">${esc(r.computer)}</td><td class="mono">${esc(r.eid)}</td></tr>
+        ${state.open===r.i?`<tr class="detail"><td colspan="4">${kvBlock(splitKV(r.data.split("\n"), ": "))}</td></tr>`:""}`).join("")}
+      </tbody></table></div>${moreBtn(shown.length, rows.length)}` : `<div class="empty"><b>No Sigma matches</b>Use the Hayabusa alerts and Raw Events for this case.</div>`);
+  }
   bindToolbar(); bindRows();
 }
 
-/* ---------- markdown (case README) ---------- */
-function md(src){
-  src = src.replace(/<\/?div[^>]*>/g, "");
-  const out = []; let code = null, list = null;
-  const inline = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
-  const closeList = () => { if (list){ out.push(`</${list}>`); list = null; } };
-  for (const line of src.split("\n")){
-    if (line.startsWith("```")){ if (code===null){ closeList(); code = []; } else { out.push(`<pre>${esc(code.join("\n"))}</pre>`); code = null; } continue; }
-    if (code !== null){ code.push(line); continue; }
-    let m;
-    if ((m = line.match(/^(#{1,3})\s+(.*)/))){ closeList(); out.push(`<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`); }
-    else if ((m = line.match(/^\d+\.\s+(.*)/))){ if (list!=="ol"){ closeList(); out.push("<ol>"); list="ol"; } out.push(`<li>${inline(m[1])}`); }
-    else if ((m = line.match(/^\s*[-*]\s+(.*)/))){ if (!list){ out.push("<ul>"); list="ul"; } out.push(`<div>• ${inline(m[1])}</div>`); }
-    else if (!line.trim()){ if (list!=="ol") closeList(); }
-    else { closeList(); out.push(`<p>${inline(line)}</p>`); }
+const SUMMARY_KEYS = ["CommandLine","Image","TargetUserName","SubjectUserName","IpAddress","SourceIp","DestinationIp","QueryName","TargetFilename","TargetImage","ServiceName","ScriptBlockText","ObjectName","Properties","Status"];
+function rawSummary(data){
+  const out = [];
+  for (const k of SUMMARY_KEYS){ const hit = Object.keys(data).find(x => x === k || x.endsWith("." + k)); if (hit) out.push(`${k}: ${data[hit]}`); if (out.length >= 3) break; }
+  if (!out.length) for (const [k,v] of Object.entries(data).slice(0,3)) out.push(`${k}: ${v}`);
+  return out.join(" | ");
+}
+async function renderRaw(box, d){
+  if (!state.raw[d.id]){
+    box.innerHTML = `<div class="empty"><b>Loading raw events...</b></div>`;
+    try { state.raw[d.id] = await api("/api/raw?id=" + encodeURIComponent(d.id)); }
+    catch(e){ box.innerHTML = `<div class="empty"><b>Could not load events</b>${esc(e.message)}</div>`; return; }
+    if (state.tab !== "raw" || state.current !== d.id) return;
   }
-  closeList();
-  return out.join("\n");
+  const all = state.raw[d.id].events;
+  const q = state.q.toLowerCase();
+  const eids = count(all, e => String(e.eid));
+  const rows = all.map((e,i)=>({e,i})).filter(({e}) => (!state.eid || String(e.eid) === state.eid) &&
+    (!q || (e.computer+" "+e.channel+" "+e.eid+" "+Object.entries(e.data).join(" ")).toLowerCase().includes(q)));
+  const shown = rows.slice(0, state.limit);
+  const select = `<select class="select" id="sel"><option value="">All Event IDs</option>${eids.map(([k,n])=>`<option value="${esc(k)}" ${state.eid===k?"selected":""}>EID ${esc(k)} (${n})</option>`).join("")}</select>`;
+  box.innerHTML = toolbar({select, n:rows.length, total:all.length}) +
+    (state.raw[d.id].truncated ? `<div class="count" style="margin-bottom:8px">Showing the first ${all.length} events.</div>` : "") +
+    `<div class="wrap"><table><thead><tr><th>Time (UTC)</th><th>EID</th><th>Channel</th><th>Host</th><th>Summary</th></tr></thead><tbody>
+    ${shown.map(({e,i})=>`<tr class="r" data-i="${i}"><td class="mono">${fmtTime(parseTime(e.time))}</td><td class="mono">${esc(e.eid)}</td>
+      <td>${esc(e.channel.replace(/^Microsoft-Windows-/,""))}</td><td class="mono">${esc(e.computer)}</td><td class="mono trunc">${esc(rawSummary(e.data))}</td></tr>
+      ${state.open===i?`<tr class="detail"><td colspan="5">${kvBlock([["Provider",e.provider],["Channel",e.channel],["RecordID",e.record],...Object.entries(e.data)])}</td></tr>`:""}`).join("")}
+    </tbody></table></div>${moreBtn(shown.length, rows.length)}`;
+  bindToolbar(); bindRows();
 }
 
-window.addEventListener("hashchange", () => { const id = location.hash.slice(1); if (id && id !== state.current) selectCase(id); });
+function renderNetworkTable(box, d){
+  const z = d.zeek || {};
+  let name = state.tab === "dns" ? "dns" : state.tab === "conn" ? "conn" : (state.zlog && z[state.zlog] ? state.zlog : Object.keys(z)[0]);
+  const log = z[name] || {fields:[], rows:[]};
+  const pref = {dns:["ts","id.orig_h","id.resp_h","query","qtype_name","rcode_name","answers"],
+                conn:["ts","id.orig_h","id.orig_p","id.resp_h","id.resp_p","proto","service","duration","orig_bytes","resp_bytes","conn_state"]};
+  const cols = (pref[name] || log.fields.filter(f=>f!=="uid").slice(0,9)).filter(c => log.fields.includes(c));
+  const q = state.q.toLowerCase();
+  const rows = log.rows.map((r,i)=>({r,i})).filter(({r}) => !q || Object.values(r).some(v => String(v).toLowerCase().includes(q)));
+  const shown = rows.slice(0, state.limit);
+  const select = state.tab === "zeek" ? `<select class="select" id="sel">${Object.keys(z).map(k=>`<option value="${esc(k)}" ${k===name?"selected":""}>${esc(k)}.log (${z[k].rows.length})</option>`).join("")}</select>` : "";
+  box.innerHTML = toolbar({select, n:rows.length, total:log.rows.length}) + (log.rows.length ? `<div class="wrap"><table>
+    <thead><tr>${cols.map(k=>`<th>${esc(k)}</th>`).join("")}</tr></thead><tbody>
+    ${shown.map(({r,i})=>`<tr class="r" data-i="${i}">${cols.map(k=>`<td class="mono ${k==="answers"||k==="query"?"trunc":""}">${esc(k==="ts"?fmtTime(parseTime(r[k])):r[k])}</td>`).join("")}</tr>
+      ${state.open===i?`<tr class="detail"><td colspan="${cols.length}">${kvBlock(Object.entries(r).map(([k,v])=>[k, k==="ts"?fmtTime(parseTime(v))+" ("+v+")":v]))}</td></tr>`:""}`).join("")}
+    </tbody></table></div>${moreBtn(shown.length, rows.length)}` : `<div class="empty"><b>No ${esc(name || "")} records</b></div>`);
+  bindToolbar(); bindRows();
+}
+
+/* ---------- investigation ---------- */
+function parseReadme(src){
+  src = src.replace(/<\/?div[^>]*>/g, "");
+  const sections = []; let cur = null;
+  for (const line of src.split("\n")){
+    const m = line.match(/^##\s+(.*)/);
+    if (m){ cur = {title:m[1].trim(), lines:[]}; sections.push(cur); }
+    else if (cur) cur.lines.push(line);
+  }
+  return sections;
+}
+function mdInline(s){ return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>"); }
+function parseQuestions(lines){
+  const qs = [];
+  for (const l of lines){
+    const m = l.match(/^\d+\.\s+(.*)/);
+    if (m) qs.push(m[1]);
+    else if (qs.length && l.trim().startsWith("-")) qs[qs.length-1] += "\n" + l.trim().replace(/^-\s*/,"");
+  }
+  return qs;
+}
+function renderInvestigation(c, d){
+  const secs = parseReadme(d.readme || "");
+  const scenario = secs.find(s => s.title.includes("السيناريو"));
+  const qsec = secs.find(s => s.title.includes("الأسئلة"));
+  const qs = qsec ? parseQuestions(qsec.lines) : [];
+  const notes = d.notes || {};
+  const scenarioText = scenario ? scenario.lines.join(" ").trim() : d.description;
+  c.innerHTML = `
+    ${scenarioText ? `<div class="card"><h3>Scenario</h3><div class="${scenario?"ar":""}" dir="auto">${mdInline(scenarioText)}</div></div>` : ""}
+    ${qs.length ? `<div class="section-title">Questions</div>${qs.map((q,i)=>`
+      <div class="q"><div class="qt ar"><span class="qn">${i+1}.</span>${q.split("\n").map(mdInline).join("<br>")}</div>
+      <textarea data-k="q${i+1}" placeholder="Your answer..." dir="auto">${esc(notes["q"+(i+1)]||"")}</textarea></div>`).join("")}` : ""}
+    <div class="section-title">Incident report</div>
+    <div class="grid">${REPORT.map(([k,l,h])=>`<div class="field"><label>${l}${h?`<small>${h}</small>`:""}</label>
+      <textarea data-k="${k}" dir="auto" style="min-height:${k==="timeline"||k==="summary"?110:72}px">${esc(notes[k]||"")}</textarea></div>`).join("")}</div>
+    <div class="toolbar mt"><button class="btn" id="dl">Download report</button><span class="save" id="saved">${Object.keys(notes).length ? "Saved" : "Your answers are saved automatically"}</span></div>`;
+  let t;
+  c.querySelectorAll("textarea").forEach(ta => ta.oninput = () => {
+    notes[ta.dataset.k] = ta.value; d.notes = notes; $("#saved").textContent = "Saving...";
+    clearTimeout(t); t = setTimeout(async () => {
+      try { await api("/api/notes?id=" + encodeURIComponent(d.id), {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(notes)}); $("#saved").textContent = "Saved"; }
+      catch(e){ $("#saved").textContent = "Not saved: " + e.message; }
+    }, 600);
+  });
+  $("#dl").onclick = () => {
+    const L = [`# Incident Report: ${d.id.toUpperCase()} ${caseTitle(d)}`, "", `- Evidence: ${d.evidence.join(", ")}`, `- Date: ${new Date().toISOString().slice(0,10)}`, ""];
+    for (const [k,l] of REPORT){ L.push(`## ${l}`, "", notes[k] || "-", ""); }
+    if (qs.length){ L.push("## Case questions", ""); qs.forEach((q,i)=>{ L.push(`**${i+1}. ${q.replace(/\n/g," ")}**`, "", notes["q"+(i+1)] || "-", ""); }); }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([L.join("\n")], {type:"text/markdown"}));
+    a.download = `${d.id}-incident-report.md`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+}
+
+/* ---------- new case ---------- */
+function openNewCase(){
+  let files = [];
+  const m = $("#modal");
+  m.innerHTML = `<div class="modal-bg"><div class="modal">
+    <h2>New Case</h2><p>Upload Windows event logs (.evtx) or network captures (.pcap, .pcapng). Use lab or CTF data only.</p>
+    <input type="text" id="nc-title" placeholder="Case title, e.g. Suspicious PowerShell on HR-PC">
+    <textarea id="nc-desc" placeholder="Scenario or notes (optional)" dir="auto"></textarea>
+    <div class="drop" id="drop">Drop files here or click to choose<input type="file" id="nc-file" multiple accept=".evtx,.pcap,.pcapng,.cap" hidden></div>
+    <div class="files" id="nc-files"></div><div class="err" id="nc-err"></div>
+    <div class="row"><button class="btn ghost" id="nc-cancel">Cancel</button><button class="btn" id="nc-go" disabled>Create and Analyze</button></div>
+  </div></div>`;
+  const drop = $("#drop"), input = $("#nc-file");
+  const ok = f => /\.(evtx|pcap|pcapng|cap)$/i.test(f.name);
+  const show = () => {
+    $("#nc-files").innerHTML = files.map(f=>`<div><span>${esc(f.name)}</span><span>${(f.size/1048576).toFixed(1)} MB</span></div>`).join("");
+    $("#nc-go").disabled = !files.length;
+  };
+  const add = list => { const bad = [...list].filter(f=>!ok(f)); files = files.concat([...list].filter(ok)); $("#nc-err").textContent = bad.length ? `Skipped: ${bad.map(f=>f.name).join(", ")}` : ""; show(); };
+  drop.onclick = e => { if (e.target !== input) input.click(); };
+  input.onchange = () => add(input.files);
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); };
+  drop.ondragleave = () => drop.classList.remove("over");
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); add(e.dataTransfer.files); };
+  $("#nc-cancel").onclick = () => m.innerHTML = "";
+  $("#nc-go").onclick = async () => {
+    const go = $("#nc-go"); go.disabled = true;
+    try {
+      go.textContent = "Creating case...";
+      const {id} = await api("/api/new", {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({title: $("#nc-title").value.trim() || files[0].name, description: $("#nc-desc").value.trim()})});
+      for (const [i,f] of files.entries()){
+        go.textContent = `Uploading ${i+1}/${files.length}...`;
+        await api(`/api/upload?id=${id}&file=${encodeURIComponent(f.name)}`, {method:"POST", body:f});
+      }
+      go.textContent = "Analyzing...";
+      const r = await api("/api/run?id=" + id, {method:"POST"});
+      m.innerHTML = "";
+      state.current = null; await loadCases(id);
+      if (!r.ok){ state.runLog = r.output; render(); }
+    } catch(e){ $("#nc-err").textContent = e.message; go.disabled = false; go.textContent = "Create and Analyze"; }
+  };
+}
+$("#newCase").onclick = openNewCase;
 loadCases();
 </script>
 </body>
