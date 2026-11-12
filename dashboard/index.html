@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SOC Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0b1016; --panel:#121a23; --panel2:#17212c; --line:#223040; --text:#dbe4ee; --muted:#8597aa;
@@ -14,15 +14,15 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--text);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:14px;line-height:1.6}
+body{background:var(--bg);color:var(--text);font-family:Inter,"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:14px;line-height:1.6}
 button{font:inherit;color:inherit;cursor:pointer}
 .app{display:grid;grid-template-columns:270px 1fr;height:100vh}
-aside{background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+aside{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
 .brand{padding:18px 18px 14px;border-bottom:1px solid var(--line)}
 .brand b{display:block;font-size:16px;letter-spacing:.2px}
 .brand span{color:var(--muted);font-size:12px}
 .cases{overflow:auto;padding:8px}
-.case-btn{display:block;width:100%;text-align:right;background:none;border:1px solid transparent;border-radius:8px;padding:10px 12px;margin-bottom:4px}
+.case-btn{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:10px 12px;margin-bottom:4px}
 .case-btn:hover{background:var(--panel2)}
 .case-btn.active{background:var(--panel2);border-color:var(--line)}
 .case-btn .num{font-family:var(--mono);color:var(--accent);font-size:12px}
@@ -47,18 +47,18 @@ main{overflow:auto;min-width:0}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
 .kpi .v{font-size:28px;font-weight:700;font-family:var(--mono);line-height:1.2}
 .kpi .l{color:var(--muted);font-size:12.5px}
-.kpi::before{content:"";position:absolute;inset:0 0 auto auto;width:3px;height:100%;background:var(--c,var(--accent))}
+.kpi::before{content:"";position:absolute;inset:0 auto auto 0;width:3px;height:100%;background:var(--c,var(--accent))}
 .two{grid-template-columns:1fr 1fr}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
 .card h3{margin:0 0 12px;font-size:14px;font-weight:600;color:var(--muted)}
 .bars .row{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:10px;align-items:center;margin-bottom:8px}
-.bars .lbl{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right}
+.bars .lbl{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:left}
 .bars .track{grid-column:1/-1;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:-4px}
 .bars .fill{height:100%;border-radius:3px;background:var(--accent)}
-.bars .n{font-family:var(--mono);font-size:12px;text-align:left}
+.bars .n{font-family:var(--mono);font-size:12px;text-align:right}
 .sev{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--panel2);margin-bottom:12px}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted)}
-.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-left:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
 .timeline svg{width:100%;height:150px;display:block}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--muted)}
@@ -66,13 +66,13 @@ main{overflow:auto;min-width:0}
 .search{flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;color:var(--text);font:inherit}
 .count{color:var(--muted);font-size:12.5px}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
-th{position:sticky;top:0;background:var(--panel2);color:var(--muted);font-weight:500;text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--panel2);color:var(--muted);font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
 td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 tr.r{cursor:pointer}
 tr.r:hover td{background:var(--panel2)}
 .mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
 td.mono{white-space:nowrap}
-td.mono.trunc,.detail td{white-space:normal}
+.detail td{white-space:normal}
 .ltr{direction:ltr;text-align:left;unicode-bidi:isolate}
 .wrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:auto;max-height:70vh}
 .badge{display:inline-block;padding:1px 8px;border-radius:4px;font-size:11.5px;font-weight:600;color:#0b1016;background:var(--c)}
@@ -82,7 +82,7 @@ td.mono.trunc,.detail td{white-space:normal}
 .kv .v{word-break:break-all;white-space:pre-wrap}
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty b{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
-.readme{max-width:860px}
+.readme{max-width:860px;direction:rtl;text-align:right;font-family:"IBM Plex Sans Arabic",sans-serif}
 .readme h1{display:none}
 .readme h2{font-size:16px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-top:22px}
 .readme pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;direction:ltr;text-align:left;overflow:auto;font-family:var(--mono);font-size:12.5px}
@@ -90,13 +90,13 @@ td.mono.trunc,.detail td{white-space:normal}
 .readme li{margin:6px 0}
 .trunc{max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .log{background:#05090d;border:1px solid var(--line);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;direction:ltr;text-align:left;white-space:pre-wrap;max-height:260px;overflow:auto;margin-top:12px}
-@media (max-width:900px){.app{grid-template-columns:1fr;height:auto}aside{border-left:0;border-bottom:1px solid var(--line)}.cases{display:flex;overflow-x:auto}.case-btn{min-width:200px}.two{grid-template-columns:1fr}main{overflow:visible}}
+@media (max-width:900px){.app{grid-template-columns:1fr;height:auto}aside{border-right:0;border-bottom:1px solid var(--line)}.cases{display:flex;overflow-x:auto}.case-btn{min-width:200px}.two{grid-template-columns:1fr}main{overflow:visible}}
 </style>
 </head>
 <body>
 <div class="app">
   <aside>
-    <div class="brand"><b>مختبر صيد التهديدات</b><span>SOC Hunting Lab</span></div>
+    <div class="brand"><b>SOC Hunting Lab</b><span>Threat Hunting Dashboard</span></div>
     <div class="cases" id="cases"></div>
   </aside>
   <main>
@@ -106,7 +106,11 @@ td.mono.trunc,.detail td{white-space:normal}
 </div>
 <script>
 const LEVELS = ["critical","high","medium","low","informational"];
-const LEVEL_AR = {critical:"حرج",high:"عالٍ",medium:"متوسط",low:"منخفض",informational:"معلوماتي"};
+const LEVEL_AR = {critical:"Critical",high:"High",medium:"Medium",low:"Low",informational:"Info"};
+const CASE_EN = {"case-01":"Log Clearing","case-02":"Password Spraying","case-03":"Remote Execution","case-04":"Logon Screen Backdoor","case-05":"Process Memory Dump","case-06":"Domain Credential Theft","case-07":"Covert C2 Channel"};
+const LEVEL_EN = {"مبتدئ":"Beginner","متوسط":"Intermediate","متقدم":"Advanced"};
+const caseTitle = c => CASE_EN[c.id] || c.title;
+const caseLevel = c => LEVEL_EN[c.level] || c.level;
 const state = { cases: [], current: null, data: null, tab: "overview", filter: new Set(LEVELS), q: "", open: null };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -138,8 +142,8 @@ function renderCases(){
   $("#cases").innerHTML = state.cases.map(c => `
     <button class="case-btn ${state.current===c.id?"active":""}" data-id="${c.id}">
       <span class="num">${esc(c.id.toUpperCase())}</span>
-      <span class="t">${esc(c.title.replace(/^القضية \d+:\s*/, ""))}</span>
-      <span class="meta"><span class="dot ${c.analyzed?"on":""}"></span>${c.analyzed?"محلّلة":"لم تُحلّل"} · ${esc(c.level)} · ${c.kind==="network"?"شبكة":"ويندوز"}</span>
+      <span class="t">${esc(caseTitle(c))}</span>
+      <span class="meta"><span class="dot ${c.analyzed?"on":""}"></span>${c.analyzed?"Analyzed":"Not analyzed"} · ${esc(caseLevel(c))} · ${c.kind==="network"?"Network":"Windows"}</span>
     </button>`).join("");
   document.querySelectorAll(".case-btn").forEach(b => b.onclick = () => selectCase(b.dataset.id));
 }
@@ -154,8 +158,8 @@ async function selectCase(id){
 }
 
 function tabsFor(d){
-  if (d.kind === "network") return [["overview","نظرة عامة"],["dns","DNS"],["conn","الاتصالات"],["questions","الأسئلة"]];
-  return [["overview","نظرة عامة"],["alerts","تنبيهات Hayabusa"],["sigma","كشف Sigma"],["questions","الأسئلة"]];
+  if (d.kind === "network") return [["overview","Overview"],["dns","DNS"],["conn","Connections"],["questions","Questions"]];
+  return [["overview","Overview"],["alerts","Hayabusa Alerts"],["sigma","Sigma Detections"],["questions","Questions"]];
 }
 
 function render(){
@@ -163,22 +167,22 @@ function render(){
   const analyzed = d.kind === "network" ? !!d.zeek : !!d.hayabusa;
   $("#head").innerHTML = `
     <div class="head-row">
-      <div><h1>${esc(d.title)}</h1>
-        <div class="sub"><span>المستوى: ${esc(d.level)}</span><span>الأدلة: ${d.evidence.map(e=>`<code>${esc(e)}</code>`).join(" ")}</span></div></div>
-      <button class="run" id="run">${analyzed ? "إعادة التحليل" : "تحليل الأدلة"}</button>
+      <div><h1>${esc(d.id.toUpperCase())}: ${esc(caseTitle(d))}</h1>
+        <div class="sub"><span>Level: ${esc(caseLevel(d))}</span><span>Evidence: ${d.evidence.map(e=>`<code>${esc(e)}</code>`).join(" ")}</span></div></div>
+      <button class="run" id="run">${analyzed ? "Re-analyze" : "Analyze Evidence"}</button>
     </div>
     <div class="tabs">${tabsFor(d).map(([k,v])=>`<button class="tab ${state.tab===k?"active":""}" data-t="${k}">${v}</button>`).join("")}</div>`;
   document.querySelectorAll(".tab").forEach(b => b.onclick = () => { state.tab = b.dataset.t; state.open = null; render(); });
   $("#run").onclick = runAnalysis;
   const c = $("#content");
   if (state.tab === "questions") return c.innerHTML = `<div class="readme">${md(d.readme)}</div>`;
-  if (!analyzed) return c.innerHTML = `<div class="empty"><b>لم تُحلّل هذه القضية بعد</b>اضغط «تحليل الأدلة» لتشغيل ${d.kind==="network"?"Zeek":"Hayabusa و Chainsaw"} على الأدلة.</div>`;
+  if (!analyzed) return c.innerHTML = `<div class="empty"><b>This case has not been analyzed yet</b>Click "Analyze Evidence" to run ${d.kind==="network"?"Zeek":"Hayabusa and Chainsaw"} on the evidence.</div>`;
   if (d.kind === "network") return renderNetwork(c, d);
   renderWindows(c, d);
 }
 
 async function runAnalysis(){
-  const b = $("#run"); b.disabled = true; b.textContent = "جارٍ التحليل...";
+  const b = $("#run"); b.disabled = true; b.textContent = "Analyzing...";
   const r = await api("/api/run?id=" + encodeURIComponent(state.current), {method:"POST"});
   state.cases = await api("/api/cases");
   await selectCase(state.current);
@@ -194,7 +198,7 @@ function bars(entries, opts={}){
 }
 function timeline(times, levels){
   const pts = times.map((t,i)=>[t, levels ? levels[i] : null]).filter(p=>!isNaN(p[0]));
-  if (!pts.length) return `<div class="count">لا توجد أوقات</div>`;
+  if (!pts.length) return `<div class="count">No timestamps</div>`;
   let min = Math.min(...pts.map(p=>p[0])), max = Math.max(...pts.map(p=>p[0]));
   if (max === min) { min -= 30000; max += 30000; }
   const N = 40, W = 800, H = 130, bw = W / N;
@@ -205,10 +209,10 @@ function timeline(times, levels){
   const order = levels ? [...LEVELS].reverse() : ["x"];
   let rects = "";
   bins.forEach((b,i) => { let y = H; for (const l of order){ const n = b[l]||0; if(!n) continue; const h = n/top*(H-6); y -= h;
-    rects += `<rect x="${W-(i+1)*bw+1}" y="${y}" width="${bw-2}" height="${h}" rx="1.5" fill="${l==="x"?"var(--accent)":cssLevel(l)}"><title>${n}</title></rect>`; } });
+    rects += `<rect x="${i*bw+1}" y="${y}" width="${bw-2}" height="${h}" rx="1.5" fill="${l==="x"?"var(--accent)":cssLevel(l)}"><title>${n}</title></rect>`; } });
   return `<svg viewBox="0 0 ${W} ${H+20}" preserveAspectRatio="none">${rects}
-    <text x="${W}" y="${H+16}" fill="var(--muted)" font-size="11" text-anchor="end" font-family="JetBrains Mono">${fmtTime(min)}</text>
-    <text x="0" y="${H+16}" fill="var(--muted)" font-size="11" font-family="JetBrains Mono">${fmtTime(max)}</text></svg>`;
+    <text x="0" y="${H+16}" fill="var(--muted)" font-size="11" font-family="JetBrains Mono">${fmtTime(min)}</text>
+    <text x="${W}" y="${H+16}" fill="var(--muted)" font-size="11" text-anchor="end" font-family="JetBrains Mono">${fmtTime(max)}</text></svg>`;
 }
 const kpi = (v,l,c) => `<div class="kpi" style="--c:${c||"var(--accent)"}"><div class="v">${v}</div><div class="l">${l}</div></div>`;
 
@@ -220,21 +224,21 @@ function renderWindows(c, d){
     const total = hb.length || 1;
     c.innerHTML = `
       <div class="grid kpis">
-        ${kpi(hb.length,"تنبيهات Hayabusa")}
-        ${kpi(byL.critical+byL.high,"حرج / عالٍ","var(--high)")}
-        ${kpi(byL.medium,"متوسط","var(--medium)")}
-        ${kpi(sg.length,"أحداث طابقت Sigma","var(--low)")}
-        ${kpi(new Set(hb.map(r=>r.computer)).size,"أجهزة","var(--informational)")}
+        ${kpi(hb.length,"Hayabusa alerts")}
+        ${kpi(byL.critical+byL.high,"Critical / High","var(--high)")}
+        ${kpi(byL.medium,"Medium","var(--medium)")}
+        ${kpi(sg.length,"Sigma matched events","var(--low)")}
+        ${kpi(new Set(hb.map(r=>r.computer)).size,"Hosts","var(--informational)")}
       </div>
-      <div class="card" style="margin-top:14px"><h3>توزيع الخطورة</h3>
+      <div class="card" style="margin-top:14px"><h3>Severity distribution</h3>
         <div class="sev">${LEVELS.map(l=>byL[l]?`<div style="width:${byL[l]/total*100}%;background:${cssLevel(l)}" title="${LEVEL_AR[l]}: ${byL[l]}"></div>`:"").join("")}</div>
         <div class="legend">${LEVELS.map(l=>`<span><i style="background:${cssLevel(l)}"></i>${LEVEL_AR[l]} ${byL[l]}</span>`).join("")}</div></div>
-      <div class="card timeline" style="margin-top:14px"><h3>الخط الزمني للتنبيهات (UTC)</h3>${timeline(hb.map(r=>parseTime(r.time)), hb.map(r=>r.level))}</div>
+      <div class="card timeline" style="margin-top:14px"><h3>Alert timeline (UTC)</h3>${timeline(hb.map(r=>parseTime(r.time)), hb.map(r=>r.level))}</div>
       <div class="grid two" style="margin-top:14px">
-        <div class="card"><h3>أكثر قواعد Hayabusa تنبيهًا</h3>${bars(count(hb.filter(r=>r.level!=="informational"), r=>r.rule))}</div>
-        <div class="card"><h3>أكثر قواعد Sigma تطابقًا</h3>${sg.length?bars(count(sg, r=>r.rules), {color:()=>"var(--low)"}):`<div class="count">لا توجد مطابقات</div>`}</div>
-        <div class="card"><h3>أرقام الأحداث (Event ID)</h3>${bars(count(hb, r=>r.eid ? "EID " + r.eid : ""), {color:()=>"var(--informational)"})}</div>
-        <div class="card"><h3>الأجهزة</h3>${bars(count(hb, r=>r.computer), {color:()=>"var(--informational)"})}</div>
+        <div class="card"><h3>Top Hayabusa rules</h3>${bars(count(hb.filter(r=>r.level!=="informational"), r=>r.rule))}</div>
+        <div class="card"><h3>Top Sigma rules</h3>${sg.length?bars(count(sg, r=>r.rules), {color:()=>"var(--low)"}):`<div class="count">No matches</div>`}</div>
+        <div class="card"><h3>Event IDs</h3>${bars(count(hb, r=>r.eid ? "EID " + r.eid : ""), {color:()=>"var(--informational)"})}</div>
+        <div class="card"><h3>Hosts</h3>${bars(count(hb, r=>r.computer), {color:()=>"var(--informational)"})}</div>
       </div>`;
     return;
   }
@@ -242,7 +246,7 @@ function renderWindows(c, d){
     const q = state.q.toLowerCase();
     const rows = hb.map((r,i)=>({...r,i})).filter(r => state.filter.has(r.level) && (!q || (r.rule+r.details+r.extra+r.computer+r.eid).toLowerCase().includes(q)));
     c.innerHTML = toolbar(true, rows.length, hb.length) + `<div class="wrap"><table>
-      <thead><tr><th>الوقت (UTC)</th><th>الخطورة</th><th>القاعدة</th><th>الجهاز</th><th>EID</th><th>التفاصيل</th></tr></thead><tbody>
+      <thead><tr><th>Time (UTC)</th><th>Level</th><th>Rule</th><th>Host</th><th>EID</th><th>Details</th></tr></thead><tbody>
       ${rows.map(r=>`<tr class="r" data-i="${r.i}"><td class="mono">${fmtTime(parseTime(r.time))}</td>
         <td><span class="badge" style="--c:${cssLevel(r.level)}">${LEVEL_AR[r.level]||esc(r.level)}</span></td>
         <td class="ltr">${esc(r.rule)}</td><td class="mono">${esc(r.computer)}</td><td class="mono">${esc(r.eid)}</td>
@@ -255,11 +259,11 @@ function renderWindows(c, d){
     const q = state.q.toLowerCase();
     const rows = sg.map((r,i)=>({...r,i})).filter(r => !q || (r.rules.join(" ")+r.data+r.computer+r.eid).toLowerCase().includes(q));
     c.innerHTML = toolbar(false, rows.length, sg.length) + (sg.length ? `<div class="wrap"><table>
-      <thead><tr><th>الوقت (UTC)</th><th>قواعد Sigma</th><th>الجهاز</th><th>EID</th></tr></thead><tbody>
+      <thead><tr><th>Time (UTC)</th><th>Sigma rules</th><th>Host</th><th>EID</th></tr></thead><tbody>
       ${rows.map(r=>`<tr class="r" data-i="${r.i}"><td class="mono">${fmtTime(parseTime(r.time))}</td>
         <td class="ltr">${r.rules.map(esc).join("<br>")}</td><td class="mono">${esc(r.computer)}</td><td class="mono">${esc(r.eid)}</td></tr>
         ${state.open===r.i?`<tr class="detail"><td colspan="4">${kvBlock(r.data.split("\n"), ": ")}</td></tr>`:""}`).join("")}
-      </tbody></table></div>` : `<div class="empty"><b>لا توجد مطابقات Sigma</b>اعتمد على تنبيهات Hayabusa والسجلات الخام في هذه القضية.</div>`);
+      </tbody></table></div>` : `<div class="empty"><b>No Sigma matches</b>Use the Hayabusa alerts and raw logs for this case.</div>`);
     bindToolbar(); bindRows(); return;
   }
 }
@@ -272,7 +276,7 @@ function kvBlock(lines, sep){
 
 function toolbar(levels, n, total){
   return `<div class="toolbar">${levels?LEVELS.map(l=>`<button class="chip ${state.filter.has(l)?"on":""}" data-l="${l}" style="--c:${cssLevel(l)}">${LEVEL_AR[l]}</button>`).join(""):""}
-    <input class="search" id="q" placeholder="ابحث..." value="${esc(state.q)}"><span class="count">${n} من ${total}</span></div>`;
+    <input class="search" id="q" placeholder="Search..." value="${esc(state.q)}"><span class="count">${n} of ${total}</span></div>`;
 }
 function bindToolbar(){
   document.querySelectorAll(".chip").forEach(b => b.onclick = () => { const l = b.dataset.l; state.filter.has(l) ? state.filter.delete(l) : state.filter.add(l); render(); });
@@ -289,17 +293,17 @@ function renderNetwork(c, d){
   if (state.tab === "overview"){
     c.innerHTML = `
       <div class="grid kpis">
-        ${kpi(conn.length,"اتصالات")}
-        ${kpi(dns.length,"طلبات DNS","var(--low)")}
-        ${kpi(new Set(dns.map(r=>r.query)).size,"أسماء مختلفة","var(--medium)")}
-        ${kpi(new Set(conn.map(r=>r["id.orig_h"])).size,"أجهزة مصدر","var(--informational)")}
+        ${kpi(conn.length,"Connections")}
+        ${kpi(dns.length,"DNS queries","var(--low)")}
+        ${kpi(new Set(dns.map(r=>r.query)).size,"Unique names","var(--medium)")}
+        ${kpi(new Set(conn.map(r=>r["id.orig_h"])).size,"Source hosts","var(--informational)")}
       </div>
-      <div class="card timeline" style="margin-top:14px"><h3>الخط الزمني لطلبات DNS (UTC)</h3>${timeline(dns.map(r=>parseTime(r.ts)))}</div>
+      <div class="card timeline" style="margin-top:14px"><h3>DNS query timeline (UTC)</h3>${timeline(dns.map(r=>parseTime(r.ts)))}</div>
       <div class="grid two" style="margin-top:14px">
-        <div class="card"><h3>أكثر النطاقات طلبًا</h3>${bars(count(dns, r=>base(r.query||"")))}</div>
-        <div class="card"><h3>أنواع سجلات DNS</h3>${bars(count(dns, r=>r.qtype_name), {color:()=>"var(--medium)"})}</div>
-        <div class="card"><h3>المصادر</h3>${bars(count(conn, r=>r["id.orig_h"]), {color:()=>"var(--informational)"})}</div>
-        <div class="card"><h3>الوجهات والمنافذ</h3>${bars(count(conn, r=>`${r["id.resp_h"]}:${r["id.resp_p"]}/${r.proto}`), {color:()=>"var(--informational)"})}</div>
+        <div class="card"><h3>Top domains</h3>${bars(count(dns, r=>base(r.query||"")))}</div>
+        <div class="card"><h3>DNS record types</h3>${bars(count(dns, r=>r.qtype_name), {color:()=>"var(--medium)"})}</div>
+        <div class="card"><h3>Sources</h3>${bars(count(conn, r=>r["id.orig_h"]), {color:()=>"var(--informational)"})}</div>
+        <div class="card"><h3>Destinations and ports</h3>${bars(count(conn, r=>`${r["id.resp_h"]}:${r["id.resp_p"]}/${r.proto}`), {color:()=>"var(--informational)"})}</div>
       </div>`;
     return;
   }
